@@ -96,6 +96,38 @@
             getStats: async () => {
                 const res = await fetch(`${API_BASE}/stats`);
                 return res.json();
+            },
+
+            // Testimonios
+            getTestimonials: async () => {
+                const res = await fetch(`${API_BASE}/testimonials`);
+                return res.json();
+            },
+            getAllTestimonials: async () => {
+                const res = await fetch(`${API_BASE}/testimonials/all`);
+                return res.json();
+            },
+            createTestimonial: async (testimonial) => {
+                const res = await fetch(`${API_BASE}/testimonials`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(testimonial)
+                });
+                return res.json();
+            },
+            updateTestimonial: async (id, status) => {
+                const res = await fetch(`${API_BASE}/testimonials/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                return res.json();
+            },
+            deleteTestimonial: async (id) => {
+                const res = await fetch(`${API_BASE}/testimonials/${id}`, {
+                    method: 'DELETE'
+                });
+                return res.json();
             }
         };
     </script>
@@ -160,8 +192,6 @@
                                    className={`nav-link ${currentPage === 'women' ? 'active' : ''}`}>👩 Mujeres</a>
                                 <a href="#" onClick={(e) => { e.preventDefault(); navigate('men'); }} 
                                    className={`nav-link ${currentPage === 'men' ? 'active' : ''}`}>👨 Hombres</a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('gallery'); }} 
-                                   className={`nav-link ${currentPage === 'gallery' ? 'active' : ''}`}>Galería</a>
                                 <a href="#" onClick={(e) => { e.preventDefault(); navigate('booking'); }} 
                                    className={`nav-link ${currentPage === 'booking' ? 'active' : ''}`}>Reservar</a>
                             </nav>
@@ -174,7 +204,6 @@
                                 <a href="#" onClick={(e) => { e.preventDefault(); navigate('home'); }} className="nav-link-mobile">Inicio</a>
                                 <a href="#" onClick={(e) => { e.preventDefault(); navigate('women'); }} className="nav-link-mobile">👩 Mujeres</a>
                                 <a href="#" onClick={(e) => { e.preventDefault(); navigate('men'); }} className="nav-link-mobile">👨 Hombres</a>
-                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('gallery'); }} className="nav-link-mobile">Galería</a>
                                 <a href="#" onClick={(e) => { e.preventDefault(); navigate('booking'); }} className="nav-link-mobile">Reservar</a>
                             </nav>
                         )}
@@ -186,9 +215,39 @@
 
     <!-- Home Page Component -->
     <script type="text/babel">
-        const HomePage = ({ services, onNavigate, onBook }) => {
+        const HomePage = ({ services, onNavigate, onBook, testimonials, onTestimonialAdded }) => {
+            const [showCommentForm, setShowCommentForm] = React.useState(false);
+            const [commentForm, setCommentForm] = React.useState({
+                name: '',
+                email: '',
+                rating: 5,
+                message: '',
+                service_name: ''
+            });
+
             const womenServices = services.women ? services.women.slice(0, 3) : [];
             const menServices = services.men ? services.men.slice(0, 3) : [];
+            const featuredServices = services.women && services.men 
+                ? [services.women[0], services.men[0], services.women[1]].filter(Boolean)
+                : [];
+
+            const handleCommentChange = (e) => {
+                const { name, value } = e.target;
+                setCommentForm(prev => ({ ...prev, [name]: name === 'rating' ? parseInt(value) : value }));
+            };
+
+            const handleCommentSubmit = async (e) => {
+                e.preventDefault();
+                try {
+                    const result = await api.createTestimonial(commentForm);
+                    alert('¡Gracias por tu comentario! Será revisado y publicado pronto.');
+                    setCommentForm({ name: '', email: '', rating: 5, message: '', service_name: '' });
+                    setShowCommentForm(false);
+                    if (onTestimonialAdded) onTestimonialAdded();
+                } catch (err) {
+                    alert('Error al enviar tu comentario');
+                }
+            };
 
             return (
                 <div className="page active">
@@ -211,22 +270,22 @@
                                 <div className="feature-card">
                                     <div className="feature-icon">✨</div>
                                     <h3>Estilo Único</h3>
-                                    <p>Diseños personalizados para tu look perfecto</p>
+                                    <p>Diseños personalizados según tu tipo de cabello y preferencias</p>
                                 </div>
                                 <div className="feature-card">
                                     <div className="feature-icon">👥</div>
                                     <h3>Expertos Profesionales</h3>
-                                    <p>Equipo con años de experiencia</p>
+                                    <p>Equipo certificado con 15+ años de experiencia combinada</p>
                                 </div>
                                 <div className="feature-card">
                                     <div className="feature-icon">🕐</div>
-                                    <h3>Horarios Flexibles</h3>
-                                    <p>Adaptamos nuestro horario a tus necesidades</p>
+                                    <h3>Flexibilidad Horaria</h3>
+                                    <p>Lunes a sábado con citas disponibles desde las 10:00</p>
                                 </div>
                                 <div className="feature-card">
                                     <div className="feature-icon">🏆</div>
                                     <h3>Calidad Premium</h3>
-                                    <p>Productos de la más alta calidad</p>
+                                    <p>Materiales de alta calidad con garantía de durabilidad</p>
                                 </div>
                             </div>
                         </div>
@@ -235,13 +294,48 @@
                     <section className="services-section">
                         <div className="container">
                             <div className="section-header">
+                                <h2>🌟 Servicios Destacados</h2>
+                                <p>Nuestros servicios más populares y recomendados</p>
+                            </div>
+                            <div className="services-grid">
+                                {featuredServices.map(service => (
+                                    <ServiceCard key={service.id} service={service} onBook={onBook} />
+                                ))}
+                            </div>
+                            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                                <button className="btn btn-gradient" onClick={() => onNavigate('women')}>Ver todos los servicios →</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="services-section alt">
+                        <div className="container">
+                            <div className="section-header">
                                 <h2>Servicios para Mujeres</h2>
-                                <p>Peinados afro, trenzas y extensiones diseñadas para realzar tu belleza natural</p>
+                                <p>Trenzas africanas, box braids, extensiones y mucho más para realzar tu belleza natural</p>
                             </div>
                             <div className="services-grid">
                                 {womenServices.map(service => (
                                     <ServiceCard key={service.id} service={service} onBook={onBook} />
                                 ))}
+                            </div>
+                            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                                <button className="btn btn-gradient" onClick={() => onNavigate('women')}>Ver todos los servicios para mujeres →</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="content-section">
+                        <div className="container">
+                            <div className="info-box">
+                                <h2>¿Por qué somos diferentes?</h2>
+                                <div className="info-content">
+                                    <p>💎 <strong>Extensiones Premium:</strong> Utilizamos extensiones 100% cabello natural de la más alta calidad</p>
+                                    <p>🎨 <strong>Diseños Personalizados:</strong> Cada look se adapta perfectamente a tu tipo de cabello y estructura facial</p>
+                                    <p>⏱️ <strong>Durabilidad Garantizada:</strong> Nuestros trabajos duran 4-12 semanas con el cuidado adecuado</p>
+                                    <p>🧴 <strong>Consejos de Cuidado:</strong> Te enseñamos cómo mantener tu peinado en perfecto estado</p>
+                                    <p>✅ <strong>Satisfacción Garantizada:</strong> Si no te satisface el resultado, haremos ajustes sin costo</p>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -250,20 +344,118 @@
                         <div className="container">
                             <div className="section-header">
                                 <h2>Servicios para Hombres</h2>
-                                <p>Trenzas, gusanillos y definición de crespos con estilo masculino</p>
+                                <p>Trenzas modernas, gusanillos artísticos y cuidado especializado para cabello afro</p>
                             </div>
                             <div className="services-grid">
                                 {menServices.map(service => (
                                     <ServiceCard key={service.id} service={service} onBook={onBook} />
                                 ))}
                             </div>
+                            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                                <button className="btn btn-gradient" onClick={() => onNavigate('men')}>Ver todos los servicios para hombres →</button>
+                            </div>
                         </div>
                     </section>
+
+                    <section className="content-section alt">
+                        <div className="container">
+                            <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Lo que dicen nuestros clientes</h2>
+                            <div className="testimonials" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
+                                {testimonials && testimonials.length > 0 ? (
+                                    testimonials.slice(0, 3).map(testimonial => (
+                                        <div key={testimonial.id} style={{ background: '#f9fafb', padding: '1.5rem', borderRadius: '0.75rem', borderLeft: '4px solid var(--purple)' }}>
+                                            <div style={{ display: 'flex', gap: '0.25rem', marginBottom: '1rem' }}>
+                                                {Array(testimonial.rating).fill().map((_, i) => (
+                                                    <span key={i} style={{ color: '#fbbf24', fontSize: '1.25rem' }}>⭐</span>
+                                                ))}
+                                            </div>
+                                            <p style={{ marginBottom: '1rem', fontStyle: 'italic', color: '#555' }}>"{testimonial.message}"</p>
+                                            <p style={{ fontWeight: '600', margin: '0.5rem 0', fontSize: '0.875rem' }}>{testimonial.name}</p>
+                                            {testimonial.service_name && <p style={{ margin: 0, color: '#666', fontSize: '0.875rem' }}>📍 {testimonial.service_name}</p>}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p style={{ textAlign: 'center', color: '#999', gridColumn: '1/-1' }}>Sé el primero en compartir tu experiencia</p>
+                                )}
+                            </div>
+                            <div style={{ textAlign: 'center' }}>
+                                <button className="btn btn-gradient" onClick={() => setShowCommentForm(!showCommentForm)}>
+                                    {showCommentForm ? '✗ Cerrar' : '💬 Compartir tu experiencia'}
+                                </button>
+                            </div>
+
+                            {showCommentForm && (
+                                <div style={{ background: '#f3f4f6', borderRadius: '0.75rem', padding: '2rem', marginTop: '2rem', maxWidth: '600px', margin: '2rem auto' }}>
+                                    <h3 style={{ marginBottom: '1.5rem' }}>Comparte tu experiencia</h3>
+                                    <form onSubmit={handleCommentSubmit}>
+                                        <div className="form-group">
+                                            <label>👤 Nombre *</label>
+                                            <input type="text" name="name" required placeholder="Tu nombre"
+                                                   value={commentForm.name} onChange={handleCommentChange} />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label>📧 Correo Electrónico *</label>
+                                            <input type="email" name="email" required placeholder="tu@email.com"
+                                                   value={commentForm.email} onChange={handleCommentChange} />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label>⭐ Calificación (1-5) *</label>
+                                            <select name="rating" required value={commentForm.rating} onChange={handleCommentChange}>
+                                                <option value="5">⭐⭐⭐⭐⭐ Excelente (5)</option>
+                                                <option value="4">⭐⭐⭐⭐ Muy Bueno (4)</option>
+                                                <option value="3">⭐⭐⭐ Bueno (3)</option>
+                                                <option value="2">⭐⭐ Aceptable (2)</option>
+                                                <option value="1">⭐ Necesita mejorar (1)</option>
+                                            </select>
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label>📋 Servicio (opcional)</label>
+                                            <input type="text" name="service_name" placeholder="Ej. Trenzas Box Braids"
+                                                   value={commentForm.service_name} onChange={handleCommentChange} />
+                                        </div>
+
+                                        <div className="form-group">
+                                            <label>💬 Tu comentario *</label>
+                                            <textarea name="message" rows="5" required placeholder="Cuéntanos tu experiencia..."
+                                                      value={commentForm.message} onChange={handleCommentChange}></textarea>
+                                        </div>
+
+                                        <button type="submit" className="btn btn-gradient btn-full">Enviar Comentario</button>
+                                    </form>
+                                </div>
+                            )}
+                        </div>
+                </section>
+
+                <section className="content-section">
+                    <div className="container">
+                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginTop: '2rem' }}>
+                            <div>
+                                <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>1️⃣</div>
+                                <h3>Elige Servicio</h3>
+                                <p>Explore nuestro catálogo de servicios</p>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>2️⃣</div>
+                                <h3>Selecciona Fecha</h3>
+                                <p>Verifica disponibilidad en tiempo real</p>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>3️⃣</div>
+                                <h3>Confirma Cita</h3>
+                                <p>Te contactamos en 24 horas</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                     <section className="cta">
                         <div className="container">
                             <h2>¿Lista para tu nuevo look?</h2>
-                            <p>Reserva tu cita ahora y déjanos crear el estilo perfecto para ti</p>
+                            <p>Nuestras citas se agotan rápido. Reserva ahora mismo</p>
                             <button className="btn btn-white" onClick={() => onNavigate('booking')}>Reservar Ahora</button>
                         </div>
                     </section>
@@ -358,40 +550,7 @@
 
     <!-- Gallery Page Component -->
     <script type="text/babel">
-        const GalleryPage = () => (
-            <div className="page active">
-                <section className="page-header">
-                    <div className="container">
-                        <h1>Galería de Estilos</h1>
-                        <p>Descubre nuestros trabajos y encuentra tu inspiración</p>
-                    </div>
-                </section>
-
-                <section className="content-section">
-                    <div className="container">
-                        <div className="gallery">
-                            {Array(12).fill().map((_, i) => (
-                                <div key={i} className="gallery-item">
-                                    <img src={`img/gallery-${i + 1}.jpg`} alt={`Galería ${i + 1}`} 
-                                         onError={(e) => e.target.parentElement.innerHTML = `<div class="gallery-placeholder">Imagen ${i + 1}</div>`}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-
-                <section className="content-section alt">
-                    <div className="container text-center">
-                        <h2>Síguenos en Instagram</h2>
-                        <p style={{ marginBottom: '2rem' }}>Encuentra más inspiración y mantente al día con nuestros últimos trabajos</p>
-                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="btn btn-gradient">
-                            📷 @kikabraids
-                        </a>
-                    </div>
-                </section>
-            </div>
-        );
+        const GalleryPage = () => null;
     </script>
 
     <!-- Booking Page Component -->
@@ -623,7 +782,7 @@
 
     <!-- Admin Dashboard Component -->
     <script type="text/babel">
-        const AdminDashboard = ({ bookings, services, stats, onLogout, onCompleteBooking, onDeleteBooking, onAddProduct, onUpdateProduct, onDeleteProduct }) => {
+        const AdminDashboard = ({ bookings, services, stats, testimonials, onLogout, onCompleteBooking, onDeleteBooking, onAddProduct, onUpdateProduct, onDeleteProduct, onApproveTestimonial, onDeleteTestimonial }) => {
             const [activeTab, setActiveTab] = React.useState('bookings');
             const [showAddProduct, setShowAddProduct] = React.useState(false);
             const [editingProduct, setEditingProduct] = React.useState(null);
@@ -723,6 +882,10 @@
                                     <button className={`tab-btn ${activeTab === 'products' ? 'active' : ''}`} 
                                             onClick={() => setActiveTab('products')}>
                                         📦 Productos/Servicios
+                                    </button>
+                                    <button className={`tab-btn ${activeTab === 'testimonials' ? 'active' : ''}`} 
+                                            onClick={() => setActiveTab('testimonials')}>
+                                        💬 Comentarios ({testimonials?.filter(t => t.status === 'pending').length || 0})
                                     </button>
                                 </div>
 
@@ -824,6 +987,53 @@
                                         </div>
                                     </div>
                                 )}
+
+                                {activeTab === 'testimonials' && (
+                                    <div className="tab-content active">
+                                        <h2>Comentarios de Clientes</h2>
+                                        {testimonials && testimonials.length === 0 ? (
+                                            <p style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>No hay comentarios aún</p>
+                                        ) : (
+                                            <div>
+                                                <div style={{ marginBottom: '2rem', padding: '1rem', background: '#fef3c7', borderRadius: '0.5rem', borderLeft: '4px solid #fbbf24' }}>
+                                                    <p style={{ margin: 0, color: '#92400e' }}>
+                                                        <strong>Pendientes de aprobación:</strong> {testimonials?.filter(t => t.status === 'pending').length || 0}
+                                                    </p>
+                                                </div>
+                                                {testimonials.map(testimonial => (
+                                                    <div key={testimonial.id} style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1rem', background: testimonial.status === 'pending' ? '#f9fafb' : 'white' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                                            <div>
+                                                                <h4 style={{ margin: 0 }}>{testimonial.name}</h4>
+                                                                <p style={{ margin: '0.25rem 0', fontSize: '0.875rem', color: '#666' }}>{testimonial.email}</p>
+                                                                <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.5rem' }}>
+                                                                    {Array(testimonial.rating).fill().map((_, i) => (
+                                                                        <span key={i} style={{ color: '#fbbf24' }}>⭐</span>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                            <span style={{ background: testimonial.status === 'pending' ? '#fef3c7' : '#d1fae5', color: testimonial.status === 'pending' ? '#92400e' : '#065f46', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: '600' }}>
+                                                                {testimonial.status === 'pending' ? 'Pendiente' : 'Aprobado'}
+                                                            </span>
+                                                        </div>
+                                                        <p style={{ margin: '1rem 0', color: '#555', fontStyle: 'italic' }}>"{testimonial.message}"</p>
+                                                        {testimonial.service_name && <p style={{ margin: '0.5rem 0', color: '#666', fontSize: '0.875rem' }}>📍 Servicio: {testimonial.service_name}</p>}
+                                                        <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                                                            {testimonial.status === 'pending' && (
+                                                                <button className="btn btn-small" onClick={() => onApproveTestimonial(testimonial.id)}>
+                                                                    ✓ Aprobar
+                                                                </button>
+                                                            )}
+                                                            <button className="btn btn-small btn-danger" onClick={() => onDeleteTestimonial(testimonial.id)}>
+                                                                🗑️ Eliminar
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </main>
@@ -882,6 +1092,7 @@
             const [selectedService, setSelectedService] = React.useState(null);
             const [services, setServices] = React.useState({ women: [], men: [] });
             const [bookings, setBookings] = React.useState([]);
+            const [testimonials, setTestimonials] = React.useState([]);
             const [stats, setStats] = React.useState({ pending: 0, total: 0, revenue: 0 });
             const [adminAuthenticated, setAdminAuthenticated] = React.useState(false);
             const [toastMessage, setToastMessage] = React.useState('');
@@ -898,19 +1109,22 @@
 
             const loadData = async () => {
                 try {
-                    const [servicesRes, bookingsRes, statsRes] = await Promise.all([
+                    const [servicesRes, bookingsRes, statsRes, testimonialsRes] = await Promise.all([
                         api.getServices(),
                         api.getBookings(),
-                        api.getStats()
+                        api.getStats(),
+                        api.getTestimonials()
                     ]);
                     
                     setServices(servicesRes);
                     setBookings(bookingsRes);
                     setStats(statsRes);
+                    setTestimonials(testimonialsRes);
                     setLoading(false);
                 } catch (err) {
                     console.error('Error cargando datos:', err);
                     showToastMessage('Error al conectar con el servidor', 'error');
+                    setLoading(false);
                 }
             };
 
@@ -1012,18 +1226,39 @@
                 }
             };
 
+            const handleApproveTestimonial = async (testimonialId) => {
+                try {
+                    await api.updateTestimonial(testimonialId, 'approved');
+                    showToastMessage('Comentario aprobado');
+                    await loadData();
+                } catch (err) {
+                    showToastMessage('Error al aprobar comentario', 'error');
+                }
+            };
+
+            const handleDeleteTestimonial = async (testimonialId) => {
+                if (confirm('¿Estás seguro de que deseas eliminar este comentario?')) {
+                    try {
+                        await api.deleteTestimonial(testimonialId);
+                        showToastMessage('Comentario eliminado');
+                        await loadData();
+                    } catch (err) {
+                        showToastMessage('Error al eliminar comentario', 'error');
+                    }
+                }
+            };
+
             if (loading) {
-                return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '1.5rem' }}>⏳ Cargando...</div>;
+                return <div className="loading-spinner">Kika Braids</div>;
             }
 
             return (
                 <>
                     <Header currentPage={currentPage} onNavigate={handleNavigate} />
                     
-                    {currentPage === 'home' && <HomePage services={services} onNavigate={handleNavigate} onBook={handleBook} />}
+                    {currentPage === 'home' && <HomePage services={services} onNavigate={handleNavigate} onBook={handleBook} testimonials={testimonials} onTestimonialAdded={loadData} />}
                     {currentPage === 'women' && <WomenPage services={services} onBook={handleBook} />}
                     {currentPage === 'men' && <MenPage services={services} onBook={handleBook} />}
-                    {currentPage === 'gallery' && <GalleryPage />}
                     {currentPage === 'booking' && <BookingPage services={services} onBookingSubmit={handleBookingSubmit} selectedService={selectedService} />}
                     
                     {currentPage === 'admin' && !adminAuthenticated && <AdminLogin onLogin={handleAdminLogin} />}
@@ -1032,12 +1267,15 @@
                             bookings={bookings} 
                             services={services}
                             stats={stats}
+                            testimonials={testimonials}
                             onLogout={handleAdminLogout}
                             onCompleteBooking={handleCompleteBooking}
                             onDeleteBooking={handleDeleteBooking}
                             onAddProduct={handleAddProduct}
                             onUpdateProduct={handleUpdateProduct}
                             onDeleteProduct={handleDeleteProduct}
+                            onApproveTestimonial={handleApproveTestimonial}
+                            onDeleteTestimonial={handleDeleteTestimonial}
                         />
                     )}
 

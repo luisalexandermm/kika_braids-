@@ -59,21 +59,35 @@ function initializeDatabase() {
         )
     `);
 
+    // Tabla de Testimonios
+    db.run(`
+        CREATE TABLE IF NOT EXISTS testimonials (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL,
+            rating INTEGER NOT NULL,
+            message TEXT NOT NULL,
+            service_name TEXT,
+            status TEXT DEFAULT 'pending',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+    `);
+
     // Insertar servicios iniciales si no existen
     db.all("SELECT COUNT(*) as count FROM services", (err, rows) => {
         if (rows && rows[0].count === 0) {
             const initialServices = [
-                { name: 'Trenzas Africanas', price: 150000, description: 'Trenzas clásicas africanas', image: 'img/trenzas.jpg', category: 'women' },
-                { name: 'Trenzas Box Braids', price: 180000, description: 'Box braids premium', image: 'img/box-braids.jpg', category: 'women' },
-                { name: 'Extensiones Afro', price: 200000, description: 'Extensiones de cabello afro', image: 'img/extensiones.jpg', category: 'women' },
-                { name: 'Loc o Ganchillos', price: 160000, description: 'Loc y ganchillos instalados', image: 'img/locs.jpg', category: 'women' },
-                { name: 'Peinado Natural', price: 85000, description: 'Definición y peinado natural', image: 'img/natural.jpg', category: 'women' },
-                { name: 'Alisado Japonés', price: 220000, description: 'Alisado profesional', image: 'img/alisado.jpg', category: 'women' },
-                { name: 'Trenzas Hombre', price: 120000, description: 'Trenzas personalizadas para hombres', image: 'img/trenzas-hombre.jpg', category: 'men' },
-                { name: 'Gusanillos', price: 100000, description: 'Gusanillos con diseño', image: 'img/gusanillos.jpg', category: 'men' },
-                { name: 'Definición de Crespo', price: 80000, description: 'Definición y cuidado de cabello crespo', image: 'img/definicion.jpg', category: 'men' },
-                { name: 'Loc Hombre', price: 140000, description: 'Loc profesional para hombres', image: 'img/loc-hombre.jpg', category: 'men' },
-                { name: 'Corte y Definición', price: 95000, description: 'Corte con líneas y definición', image: 'img/corte.jpg', category: 'men' }
+                { name: 'Trenzas Africanas', price: 150000, description: 'Trenzas clásicas africanas con diseño tradicional', image: 'https://images.unsplash.com/photo-1590080876-a970b5f0f18d?w=500&h=500&fit=crop', category: 'women' },
+                { name: 'Trenzas Box Braids', price: 180000, description: 'Box braids premium con extensiones de calidad superior', image: 'https://images.unsplash.com/photo-1589556124516-d02b90a6a4c4?w=500&h=500&fit=crop', category: 'women' },
+                { name: 'Extensiones Afro', price: 200000, description: 'Extensiones de cabello afro 100% natural instaladas profesionalmente', image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=500&h=500&fit=crop', category: 'women' },
+                { name: 'Loc o Ganchillos', price: 160000, description: 'Loc y ganchillos instalados con técnica profesional', image: 'https://images.unsplash.com/photo-1599058917000-b6daf30129e0?w=500&h=500&fit=crop', category: 'women' },
+                { name: 'Peinado Natural', price: 85000, description: 'Definición y peinado natural con productos especializados', image: 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=500&h=500&fit=crop', category: 'women' },
+                { name: 'Alisado Japonés', price: 220000, description: 'Alisado profesional con tratamientos premium importados', image: 'https://images.unsplash.com/photo-1599058917211-e3e4c7d8f0d5?w=500&h=500&fit=crop', category: 'women' },
+                { name: 'Trenzas Hombre', price: 120000, description: 'Trenzas personalizadas para hombres con diseño moderno', image: 'https://images.unsplash.com/photo-1600132169912-8c5a5522159d?w=500&h=500&fit=crop', category: 'men' },
+                { name: 'Gusanillos', price: 100000, description: 'Gusanillos con diseño artístico y acabado profesional', image: 'https://images.unsplash.com/photo-1599059917000-9c6a4db03d4f?w=500&h=500&fit=crop', category: 'men' },
+                { name: 'Definición de Crespo', price: 80000, description: 'Definición y cuidado especializado de cabello crespo', image: 'https://images.unsplash.com/photo-1600132169912-1dd88b0e9f7d?w=500&h=500&fit=crop', category: 'men' },
+                { name: 'Loc Hombre', price: 140000, description: 'Loc profesional para hombres con técnica experta', image: 'https://images.unsplash.com/photo-1599058917130-8c0d4c4d5e0f?w=500&h=500&fit=crop', category: 'men' },
+                { name: 'Corte y Definición', price: 95000, description: 'Corte con líneas perfectas y definición de bordes', image: 'https://images.unsplash.com/photo-1599058916000-987a57f00ed1?w=500&h=500&fit=crop', category: 'men' }
             ];
 
             initialServices.forEach(service => {
@@ -83,6 +97,25 @@ function initializeDatabase() {
                 );
             });
             console.log('✅ Servicios iniciales insertados');
+        }
+    });
+
+    // Insertar testimonios de ejemplo si no existen
+    db.all("SELECT COUNT(*) as count FROM testimonials", (err, rows) => {
+        if (rows && rows[0].count === 0) {
+            const testimonials = [
+                { name: 'María López', email: 'maria@example.com', rating: 5, message: 'Kika es una artista. Mi peinado duró 8 semanas perfectas y el cuidado que me dieron fue excepcional. ¡Definitivamente vuelvo!', service_name: 'Trenzas Box Braids', status: 'approved' },
+                { name: 'Juan Carlos', email: 'juan@example.com', rating: 5, message: 'Excelente profesionalismo. El equipo es muy amable y te hace sentir cómodo durante todo el proceso. Totalmente recomendado.', service_name: 'Gusanillos', status: 'approved' },
+                { name: 'Sandra García', email: 'sandra@example.com', rating: 5, message: 'Transformaron mi cabello. Llegué sin esperanzas y salí feliz. Han ganado una clienta de por vida.', service_name: 'Extensiones Afro', status: 'approved' }
+            ];
+
+            testimonials.forEach(t => {
+                db.run(
+                    'INSERT INTO testimonials (name, email, rating, message, service_name, status) VALUES (?, ?, ?, ?, ?, ?)',
+                    [t.name, t.email, t.rating, t.message, t.service_name, t.status]
+                );
+            });
+            console.log('✅ Testimonios iniciales insertados');
         }
     });
 }
@@ -288,6 +321,83 @@ app.delete('/api/bookings/:id', (req, res) => {
             return;
         }
         res.json({ message: 'Reserva eliminada' });
+    });
+});
+
+// ==================== ENDPOINTS TESTIMONIOS ====================
+
+// Obtener testimonios aprobados
+app.get('/api/testimonials', (req, res) => {
+    db.all('SELECT * FROM testimonials WHERE status = "approved" ORDER BY created_at DESC', (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows || []);
+    });
+});
+
+// Obtener todos los testimonios (admin)
+app.get('/api/testimonials/all', (req, res) => {
+    db.all('SELECT * FROM testimonials ORDER BY created_at DESC', (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json(rows || []);
+    });
+});
+
+// Crear nuevo testimonio
+app.post('/api/testimonials', (req, res) => {
+    const { name, email, rating, message, service_name } = req.body;
+    
+    if (!name || !email || !rating || !message) {
+        res.status(400).json({ error: 'Faltan campos requeridos' });
+        return;
+    }
+    
+    db.run(
+        'INSERT INTO testimonials (name, email, rating, message, service_name, status) VALUES (?, ?, ?, ?, ?, ?)',
+        [name, email, rating, message, service_name || '', 'pending'],
+        function(err) {
+            if (err) {
+                res.status(500).json({ error: err.message });
+                return;
+            }
+            res.json({ id: this.lastID, message: 'Gracias por tu comentario. Será revisado y publicado pronto.' });
+        }
+    );
+});
+
+// Actualizar estado de testimonio (admin - aprobar/rechazar)
+app.put('/api/testimonials/:id', (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    db.run(
+        'UPDATE testimonials SET status = ? WHERE id = ?',
+        [status, id],
+        function(err) {
+            if (err) {
+                res.status(500).json({ error: err.message });
+                return;
+            }
+            res.json({ id, status });
+        }
+    );
+});
+
+// Eliminar testimonio
+app.delete('/api/testimonials/:id', (req, res) => {
+    const { id } = req.params;
+    
+    db.run('DELETE FROM testimonials WHERE id = ?', [id], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+            return;
+        }
+        res.json({ message: 'Testimonio eliminado' });
     });
 });
 
