@@ -1,0 +1,12 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+kika_braids.db
+*.db
+.DS_Store
+.vscode/
+*.log
+dist/
+build/
+.git/

@@ -11,495 +11,1045 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Header -->
-    <header id="header">
-        <div class="container">
-            <div class="header-content">
-                <a href="#" class="logo" onclick="showPage('home')">
-                    <div class="logo-icon">KB</div>
-                    <span class="logo-text">Kika Braids</span>
-                </a>
-                <nav class="nav-desktop">
-                    <a href="#" onclick="showPage('home')" class="nav-link active">Inicio</a>
-                    <a href="#" onclick="loadCategoryServices('women')" class="nav-link">👩 Mujeres</a>
-                    <a href="#" onclick="loadCategoryServices('men')" class="nav-link">👨 Hombres</a>
-                    <a href="#" onclick="showPage('gallery')" class="nav-link">Galería</a>
-                    <a href="#" onclick="showPage('booking')" class="nav-link">Reservar</a>
-                </nav>
-                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                    <span class="menu-icon">☰</span>
-                </button>
-            </div>
-            <nav id="mobile-menu" class="nav-mobile">
-                <a href="#" onclick="showPage('home')" class="nav-link-mobile">Inicio</a>
-                <a href="#" onclick="loadCategoryServices('women')" class="nav-link-mobile">👩 Mujeres</a>
-                <a href="#" onclick="loadCategoryServices('men')" class="nav-link-mobile">👨 Hombres</a>
-                <a href="#" onclick="showPage('gallery')" class="nav-link-mobile">Galería</a>
-                <a href="#" onclick="showPage('booking')" class="nav-link-mobile">Reservar</a>
-            </nav>
-        </div>
-    </header>
+    <div id="root"></div>
 
-    <!-- Home Page -->
-    <div id="page-home" class="page active">
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="hero-overlay"></div>
-            <img src="img/logo.png" alt="Kika Braids" class="hero-image">
-            <div class="hero-content">
-                <h1 class="hero-title">Kika Braids</h1>
-                <p class="hero-subtitle">Especialistas en Peinados Afro, Trenzas y Extensiones</p>
-                <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="showPage('booking')">Reservar Cita</button>
-                    <button class="btn btn-secondary" onclick="showPage('services')">Ver Servicios</button>
+    <!-- React CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel Standalone para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- API Service -->
+    <script type="text/babel">
+        const API_BASE = 'http://localhost:5000/api';
+
+        const api = {
+            // Servicios
+            getServices: async () => {
+                const res = await fetch(`${API_BASE}/services`);
+                return res.json();
+            },
+            createService: async (service) => {
+                const res = await fetch(`${API_BASE}/services`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(service)
+                });
+                return res.json();
+            },
+            updateService: async (id, service) => {
+                const res = await fetch(`${API_BASE}/services/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(service)
+                });
+                return res.json();
+            },
+            deleteService: async (id) => {
+                const res = await fetch(`${API_BASE}/services/${id}`, {
+                    method: 'DELETE'
+                });
+                return res.json();
+            },
+
+            // Reservas
+            getBookings: async () => {
+                const res = await fetch(`${API_BASE}/bookings`);
+                return res.json();
+            },
+            checkAvailability: async (date, time) => {
+                const res = await fetch(`${API_BASE}/bookings/check-availability`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date, time })
+                });
+                return res.json();
+            },
+            createBooking: async (booking) => {
+                const res = await fetch(`${API_BASE}/bookings`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(booking)
+                });
+                if (!res.ok) {
+                    const error = await res.json();
+                    throw new Error(error.error);
+                }
+                return res.json();
+            },
+            updateBooking: async (id, status) => {
+                const res = await fetch(`${API_BASE}/bookings/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                return res.json();
+            },
+            deleteBooking: async (id) => {
+                const res = await fetch(`${API_BASE}/bookings/${id}`, {
+                    method: 'DELETE'
+                });
+                return res.json();
+            },
+
+            // Estadísticas
+            getStats: async () => {
+                const res = await fetch(`${API_BASE}/stats`);
+                return res.json();
+            }
+        };
+    </script>
+
+    <!-- Toast Component -->
+    <script type="text/babel">
+        const Toast = ({ message, type, visible }) => {
+            if (!visible) return null;
+            return (
+                <div className={`toast show ${type}`}>
+                    {message}
                 </div>
-            </div>
-        </section>
+            );
+        };
+    </script>
 
-        <!-- Features Section -->
-        <section class="features">
-            <div class="container">
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon">✨</div>
-                        <h3>Estilo Único</h3>
-                        <p>Diseños personalizados para tu look perfecto</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">👥</div>
-                        <h3>Expertos Profesionales</h3>
-                        <p>Equipo con años de experiencia</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🕐</div>
-                        <h3>Horarios Flexibles</h3>
-                        <p>Adaptamos nuestro horario a tus necesidades</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon">🏆</div>
-                        <h3>Calidad Premium</h3>
-                        <p>Productos de la más alta calidad</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Women Services -->
-        <section class="services-section">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Servicios para Mujeres</h2>
-                    <p>Peinados afro, trenzas y extensiones diseñadas para realzar tu belleza natural</p>
-                </div>
-                <div id="women-services" class="services-grid"></div>
-            </div>
-        </section>
-
-        <!-- Men Services -->
-        <section class="services-section alt">
-            <div class="container">
-                <div class="section-header">
-                    <h2>Servicios para Hombres</h2>
-                    <p>Trenzas, gusanillos y definición de crespos con estilo masculino</p>
-                </div>
-                <div id="men-services" class="services-grid"></div>
-            </div>
-        </section>
-
-        <!-- CTA Section -->
-        <section class="cta">
-            <div class="container">
-                <h2>¿Lista para tu nuevo look?</h2>
-                <p>Reserva tu cita ahora y déjanos crear el estilo perfecto para ti</p>
-                <button class="btn btn-white" onclick="showPage('booking')">Reservar Ahora</button>
-            </div>
-        </section>
-    </div>
-
-    <!-- Services Page -->
-    <div id="page-services" class="page">
-        <section class="page-header">
-            <div class="container">
-                <h1>Nuestros Servicios</h1>
-                <p>Descubre todos los servicios que tenemos para ti</p>
-            </div>
-        </section>
-
-        <section class="content-section">
-            <div class="container">
-                <h2 class="section-title">Para Mujeres</h2>
-                <p class="section-description">Peinados afro profesionales y extensiones de alta calidad</p>
-                <div id="all-women-services" class="services-grid"></div>
-            </div>
-        </section>
-
-        <section class="content-section alt">
-            <div class="container">
-                <h2 class="section-title">Para Hombres</h2>
-                <p class="section-description">Trenzas, gusanillos y tratamientos para cabellos crespos</p>
-                <div id="all-men-services" class="services-grid"></div>
-            </div>
-        </section>
-
-        <section class="content-section">
-            <div class="container">
-                <div class="info-box">
-                    <h2>Información Importante</h2>
-                    <div class="info-content">
-                        <p>✨ <strong>Duración:</strong> Los tiempos de servicio varían según el estilo elegido (2-6 horas aproximadamente)</p>
-                        <p>💎 <strong>Calidad:</strong> Utilizamos extensiones y productos de la más alta calidad</p>
-                        <p>🎨 <strong>Personalización:</strong> Cada estilo se adapta a tus preferencias y tipo de cabello</p>
-                        <p>📅 <strong>Mantenimiento:</strong> Te asesoramos sobre cómo cuidar tu peinado para mayor duración</p>
-                        <p>💰 <strong>Precios:</strong> Los precios pueden variar según la longitud del cabello y cantidad de extensiones</p>
+    <!-- Service Card Component -->
+    <script type="text/babel">
+        const ServiceCard = ({ service, onBook }) => (
+            <div className="service-card">
+                <img 
+                    src={service.image} 
+                    alt={service.name} 
+                    className="service-image"
+                    onError={(e) => e.target.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22300%22 height=%22300%22%3E%3Crect fill=%22%23e5e7eb%22 width=%22300%22 height=%22300%22/%3E%3C/svg%3E'}
+                />
+                <div className="service-content">
+                    <h3>{service.name}</h3>
+                    <p>{service.description}</p>
+                    <div className="service-footer">
+                        <span className="service-price">${service.price.toLocaleString('es-CO')}</span>
+                        <button className="btn btn-small" onClick={() => onBook(service)}>Reservar</button>
                     </div>
                 </div>
             </div>
-        </section>
-    </div>
+        );
+    </script>
 
-    <!-- Gallery Page -->
-    <div id="page-gallery" class="page">
-        <section class="page-header">
-            <div class="container">
-                <h1>Galería de Estilos</h1>
-                <p>Descubre nuestros trabajos y encuentra tu inspiración</p>
-            </div>
-        </section>
+    <!-- Header Component -->
+    <script type="text/babel">
+        const Header = ({ currentPage, onNavigate }) => {
+            const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
-        <section class="content-section">
-            <div class="container">
-                <div id="gallery-grid" class="gallery"></div>
-            </div>
-        </section>
+            const toggleMenu = () => setMobileMenuOpen(!mobileMenuOpen);
+            const navigate = (page) => {
+                onNavigate(page);
+                setMobileMenuOpen(false);
+            };
 
-        <section class="content-section alt">
-            <div class="container text-center">
-                <h2>Síguenos en Instagram</h2>
-                <p style="margin-bottom: 2rem;">Encuentra más inspiración y mantente al día con nuestros últimos trabajos</p>
-                <a href="https://instagram.com" target="_blank" class="btn btn-gradient">
-                    📷 @kikabraids
-                </a>
-            </div>
-        </section>
-    </div>
-
-    <!-- Booking Page -->
-    <div id="page-booking" class="page">
-        <section class="page-header">
-            <div class="container">
-                <h1>Reservar Cita</h1>
-                <p>Completa el formulario y nos pondremos en contacto contigo</p>
-            </div>
-        </section>
-
-        <section class="content-section">
-            <div class="container">
-                <div class="form-container">
-                    <form id="booking-form" onsubmit="handleBooking(event)">
-                        <div class="form-group">
-                            <label>👤 Nombre Completo *</label>
-                            <input type="text" name="name" required placeholder="Tu nombre">
-                        </div>
-
-                        <div class="form-group">
-                            <label>📧 Correo Electrónico *</label>
-                            <input type="email" name="email" required placeholder="tu@email.com">
-                        </div>
-
-                        <div class="form-group">
-                            <label>📞 Teléfono *</label>
-                            <input type="tel" name="phone" required placeholder="+34 123 456 789">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Servicio *</label>
-                            <select name="service" id="service-select" required>
-                                <option value="">Selecciona un servicio</option>
-                            </select>
-                        </div>
-
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label>📅 Fecha *</label>
-                                <input type="date" name="date" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label>🕐 Hora *</label>
-                                <select name="time" required>
-                                    <option value="">Selecciona una hora</option>
-                                    <option value="10:00">10:00</option>
-                                    <option value="11:00">11:00</option>
-                                    <option value="12:00">12:00</option>
-                                    <option value="13:00">13:00</option>
-                                    <option value="14:00">14:00</option>
-                                    <option value="15:00">15:00</option>
-                                    <option value="16:00">16:00</option>
-                                    <option value="17:00">17:00</option>
-                                    <option value="18:00">18:00</option>
-                                    <option value="19:00">19:00</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label>💬 Notas adicionales (opcional)</label>
-                            <textarea name="notes" rows="4" placeholder="Cuéntanos sobre tu estilo deseado, longitud del cabello, preferencias..."></textarea>
-                        </div>
-
-                        <button type="submit" class="btn btn-gradient btn-full">Confirmar Reserva</button>
-                    </form>
-
-                    <div class="info-box" style="margin-top: 2rem;">
-                        <h3>Información importante:</h3>
-                        <ul style="list-style: none; padding: 0; margin-top: 1rem;">
-                            <li>• Te contactaremos en las próximas 24 horas para confirmar tu cita</li>
-                            <li>• Los tiempos de servicio pueden variar según el estilo elegido</li>
-                            <li>• Te recomendamos llegar con el cabello limpio y seco</li>
-                            <li>• Si necesitas cancelar, por favor avísanos con 24 horas de anticipación</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </div>
-
-    <!-- Admin Login Page -->
-    <div id="page-admin" class="page">
-        <div class="admin-login">
-            <div class="admin-login-card">
-                <div class="admin-login-header">
-                    <div class="admin-icon">👤</div>
-                    <h1>Panel de Administración</h1>
-                    <p>Kika Braids</p>
-                </div>
-                <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
-                    <div class="form-group">
-                        <label>🔒 Contraseña</label>
-                        <input type="password" id="admin-password" required placeholder="Ingresa tu contraseña">
-                    </div>
-                    <button type="submit" class="btn btn-gradient btn-full">Iniciar Sesión</button>
-                </form>
-                <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: #666;">
-                    Contraseña de ejemplo: kikabraids2026
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Admin Dashboard Page -->
-    <div id="page-admin-dashboard" class="page">
-        <header class="admin-header">
-            <div class="container">
-                <div class="admin-header-content">
-                    <div>
-                        <h1 class="admin-title">Panel de Administración</h1>
-                        <p class="admin-subtitle">Kika Braids</p>
-                    </div>
-                    <button class="btn btn-danger" onclick="handleAdminLogout()">🚪 Cerrar Sesión</button>
-                </div>
-            </div>
-        </header>
-
-        <main class="admin-main">
-            <div class="container">
-                <!-- Stats -->
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <div>
-                                <p class="stat-label">Reservas Pendientes</p>
-                                <p class="stat-value" id="stat-pending">0</p>
-                            </div>
-                            <div class="stat-icon">🕐</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <div>
-                                <p class="stat-label">Total Reservas</p>
-                                <p class="stat-value" id="stat-total">0</p>
-                            </div>
-                            <div class="stat-icon">📅</div>
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-content">
-                            <div>
-                                <p class="stat-label">Ingresos Completados</p>
-                                <p class="stat-value" id="stat-revenue">$0</p>
-                            </div>
-                            <div class="stat-icon">📈</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabs -->
-                <div class="admin-tabs">
-                    <div class="tabs-header">
-                        <button class="tab-btn active" onclick="showAdminTab('bookings')">
-                            📅 Reservas
-                        </button>
-                        <button class="tab-btn" onclick="showAdminTab('products')">
-                            📦 Productos/Servicios
-                        </button>
-                    </div>
-
-                    <!-- Bookings Tab -->
-                    <div id="admin-tab-bookings" class="tab-content active">
-                        <div id="bookings-list"></div>
-                    </div>
-
-                    <!-- Products Tab -->
-                    <div id="admin-tab-products" class="tab-content">
-                        <div class="tab-header">
-                            <h2>Servicios Disponibles</h2>
-                            <button class="btn btn-gradient" onclick="toggleAddProduct()">
-                                ➕ Agregar Servicio
+            return (
+                <header id="header">
+                    <div className="container">
+                        <div className="header-content">
+                            <a href="#" className="logo" onClick={(e) => { e.preventDefault(); navigate('home'); }}>
+                                <div className="logo-icon">KB</div>
+                                <span className="logo-text">Kika Braids</span>
+                            </a>
+                            <nav className="nav-desktop">
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('home'); }} 
+                                   className={`nav-link ${currentPage === 'home' ? 'active' : ''}`}>Inicio</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('women'); }} 
+                                   className={`nav-link ${currentPage === 'women' ? 'active' : ''}`}>👩 Mujeres</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('men'); }} 
+                                   className={`nav-link ${currentPage === 'men' ? 'active' : ''}`}>👨 Hombres</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('gallery'); }} 
+                                   className={`nav-link ${currentPage === 'gallery' ? 'active' : ''}`}>Galería</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('booking'); }} 
+                                   className={`nav-link ${currentPage === 'booking' ? 'active' : ''}`}>Reservar</a>
+                            </nav>
+                            <button className="mobile-menu-btn" onClick={toggleMenu}>
+                                <span className="menu-icon">☰</span>
                             </button>
                         </div>
+                        {mobileMenuOpen && (
+                            <nav className="nav-mobile">
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('home'); }} className="nav-link-mobile">Inicio</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('women'); }} className="nav-link-mobile">👩 Mujeres</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('men'); }} className="nav-link-mobile">👨 Hombres</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('gallery'); }} className="nav-link-mobile">Galería</a>
+                                <a href="#" onClick={(e) => { e.preventDefault(); navigate('booking'); }} className="nav-link-mobile">Reservar</a>
+                            </nav>
+                        )}
+                    </div>
+                </header>
+            );
+        };
+    </script>
 
-                        <div id="add-product-form" class="add-product-form" style="display: none;">
-                            <h3>Nuevo Servicio</h3>
-                            <form onsubmit="handleAddProduct(event)">
-                                <div class="form-row">
-                                    <input type="text" name="name" placeholder="Nombre del servicio *" required>
-                                    <input type="number" name="price" placeholder="Precio *" required>
+    <!-- Home Page Component -->
+    <script type="text/babel">
+        const HomePage = ({ services, onNavigate, onBook }) => {
+            const womenServices = services.women ? services.women.slice(0, 3) : [];
+            const menServices = services.men ? services.men.slice(0, 3) : [];
+
+            return (
+                <div className="page active">
+                    <section className="hero">
+                        <div className="hero-overlay"></div>
+                        <img src="img/logo.png" alt="Kika Braids" className="hero-image" />
+                        <div className="hero-content">
+                            <h1 className="hero-title">Kika Braids</h1>
+                            <p className="hero-subtitle">Especialistas en Peinados Afro, Trenzas y Extensiones</p>
+                            <div className="hero-buttons">
+                                <button className="btn btn-primary" onClick={() => onNavigate('booking')}>Reservar Cita</button>
+                                <button className="btn btn-secondary" onClick={() => onNavigate('women')}>Ver Servicios</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="features">
+                        <div className="container">
+                            <div className="features-grid">
+                                <div className="feature-card">
+                                    <div className="feature-icon">✨</div>
+                                    <h3>Estilo Único</h3>
+                                    <p>Diseños personalizados para tu look perfecto</p>
                                 </div>
-                                <textarea name="description" placeholder="Descripción" rows="3"></textarea>
-                                <input type="url" name="image" placeholder="URL de imagen">
-                                <select name="category">
-                                    <option value="women">Mujer</option>
-                                    <option value="men">Hombre</option>
-                                </select>
-                                <div class="form-buttons">
-                                    <button type="submit" class="btn btn-success">✓ Guardar</button>
-                                    <button type="button" class="btn btn-secondary" onclick="toggleAddProduct()">✗ Cancelar</button>
+                                <div className="feature-card">
+                                    <div className="feature-icon">👥</div>
+                                    <h3>Expertos Profesionales</h3>
+                                    <p>Equipo con años de experiencia</p>
                                 </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon">🕐</div>
+                                    <h3>Horarios Flexibles</h3>
+                                    <p>Adaptamos nuestro horario a tus necesidades</p>
+                                </div>
+                                <div className="feature-card">
+                                    <div className="feature-icon">🏆</div>
+                                    <h3>Calidad Premium</h3>
+                                    <p>Productos de la más alta calidad</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="services-section">
+                        <div className="container">
+                            <div className="section-header">
+                                <h2>Servicios para Mujeres</h2>
+                                <p>Peinados afro, trenzas y extensiones diseñadas para realzar tu belleza natural</p>
+                            </div>
+                            <div className="services-grid">
+                                {womenServices.map(service => (
+                                    <ServiceCard key={service.id} service={service} onBook={onBook} />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="services-section alt">
+                        <div className="container">
+                            <div className="section-header">
+                                <h2>Servicios para Hombres</h2>
+                                <p>Trenzas, gusanillos y definición de crespos con estilo masculino</p>
+                            </div>
+                            <div className="services-grid">
+                                {menServices.map(service => (
+                                    <ServiceCard key={service.id} service={service} onBook={onBook} />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="cta">
+                        <div className="container">
+                            <h2>¿Lista para tu nuevo look?</h2>
+                            <p>Reserva tu cita ahora y déjanos crear el estilo perfecto para ti</p>
+                            <button className="btn btn-white" onClick={() => onNavigate('booking')}>Reservar Ahora</button>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+    </script>
+
+    <!-- Women Page Component -->
+    <script type="text/babel">
+        const WomenPage = ({ services, onBook }) => {
+            const womenServices = services.women || [];
+
+            return (
+                <div className="page active">
+                    <section className="page-header">
+                        <div className="container">
+                            <h1>👩 Servicios para Mujeres</h1>
+                            <p>Peinados afro, trenzas y extensiones diseñadas para realzar tu belleza natural</p>
+                        </div>
+                    </section>
+
+                    <section className="content-section">
+                        <div className="container">
+                            <div className="services-grid">
+                                {womenServices.map(service => (
+                                    <ServiceCard key={service.id} service={service} onBook={onBook} />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="content-section alt">
+                        <div className="container">
+                            <div className="info-box">
+                                <h2>¿Por qué elegir nuestros servicios?</h2>
+                                <div className="info-content">
+                                    <p>✨ <strong>Estilo Personalizado:</strong> Cada look se adapta a tu tipo de cabello y preferencias</p>
+                                    <p>💎 <strong>Extensiones Premium:</strong> Utilizamos las mejores extensiones del mercado</p>
+                                    <p>👱 <strong>Profesionales Expertas:</strong> Nuestro equipo tiene años de experiencia</p>
+                                    <p>🕐 <strong>Duración:</strong> Nuestros trabajos duran 4-8 semanas con el cuidado adecuado</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+    </script>
+
+    <!-- Men Page Component -->
+    <script type="text/babel">
+        const MenPage = ({ services, onBook }) => {
+            const menServices = services.men || [];
+
+            return (
+                <div className="page active">
+                    <section className="page-header">
+                        <div className="container">
+                            <h1>👨 Servicios para Hombres</h1>
+                            <p>Trenzas, gusanillos y tratamientos especializados con estilo masculino</p>
+                        </div>
+                    </section>
+
+                    <section className="content-section">
+                        <div className="container">
+                            <div className="services-grid">
+                                {menServices.map(service => (
+                                    <ServiceCard key={service.id} service={service} onBook={onBook} />
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="content-section alt">
+                        <div className="container">
+                            <div className="info-box">
+                                <h2>Servicios de Calidad para Hombres</h2>
+                                <div className="info-content">
+                                    <p>✨ <strong>Diseños Modernos:</strong> Desde trenzas clásicas hasta gusanillos con estilo</p>
+                                    <p>💪 <strong>Mantenimiento Fácil:</strong> Nuestros trabajos son prácticos y de bajo mantenimiento</p>
+                                    <p>🎯 <strong>Profesionales Expertos:</strong> Especializados en cabello masculino afro</p>
+                                    <p>🕐 <strong>Duración:</strong> Las trenzas duran 6-12 semanas según el cuidado</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+    </script>
+
+    <!-- Gallery Page Component -->
+    <script type="text/babel">
+        const GalleryPage = () => (
+            <div className="page active">
+                <section className="page-header">
+                    <div className="container">
+                        <h1>Galería de Estilos</h1>
+                        <p>Descubre nuestros trabajos y encuentra tu inspiración</p>
+                    </div>
+                </section>
+
+                <section className="content-section">
+                    <div className="container">
+                        <div className="gallery">
+                            {Array(12).fill().map((_, i) => (
+                                <div key={i} className="gallery-item">
+                                    <img src={`img/gallery-${i + 1}.jpg`} alt={`Galería ${i + 1}`} 
+                                         onError={(e) => e.target.parentElement.innerHTML = `<div class="gallery-placeholder">Imagen ${i + 1}</div>`}
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                <section className="content-section alt">
+                    <div className="container text-center">
+                        <h2>Síguenos en Instagram</h2>
+                        <p style={{ marginBottom: '2rem' }}>Encuentra más inspiración y mantente al día con nuestros últimos trabajos</p>
+                        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="btn btn-gradient">
+                            📷 @kikabraids
+                        </a>
+                    </div>
+                </section>
+            </div>
+        );
+    </script>
+
+    <!-- Booking Page Component -->
+    <script type="text/babel">
+        const BookingPage = ({ services, onBookingSubmit, selectedService }) => {
+            const [formData, setFormData] = React.useState({
+                name: '',
+                email: '',
+                phone: '',
+                service_id: selectedService?.id || '',
+                date: '',
+                time: '',
+                notes: ''
+            });
+            const [availabilityChecking, setAvailabilityChecking] = React.useState(false);
+            const [availabilityMessage, setAvailabilityMessage] = React.useState('');
+            const [availabilityError, setAvailabilityError] = React.useState('');
+
+            const handleChange = (e) => {
+                const { name, value } = e.target;
+                setFormData(prev => ({ ...prev, [name]: value }));
+            };
+
+            const checkAvailability = async () => {
+                if (!formData.date || !formData.time) {
+                    setAvailabilityError('Por favor selecciona fecha y hora');
+                    return;
+                }
+                
+                setAvailabilityChecking(true);
+                setAvailabilityError('');
+                setAvailabilityMessage('');
+
+                try {
+                    const result = await api.checkAvailability(formData.date, formData.time);
+                    if (result.available) {
+                        setAvailabilityMessage('✅ ' + result.message);
+                    } else {
+                        setAvailabilityError('❌ ' + result.message);
+                    }
+                } catch (err) {
+                    setAvailabilityError('Error al verificar disponibilidad');
+                }
+                
+                setAvailabilityChecking(false);
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                
+                if (!formData.service_id) {
+                    setAvailabilityError('Por favor selecciona un servicio');
+                    return;
+                }
+
+                const allServices = [...(services.women || []), ...(services.men || [])];
+                const service = allServices.find(s => s.id == formData.service_id);
+                
+                if (!service) {
+                    setAvailabilityError('Servicio no encontrado');
+                    return;
+                }
+
+                await onBookingSubmit({
+                    name: formData.name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    service_id: formData.service_id,
+                    service_name: service.name,
+                    price: service.price,
+                    date: formData.date,
+                    time: formData.time,
+                    notes: formData.notes
+                });
+
+                setFormData({ name: '', email: '', phone: '', service_id: '', date: '', time: '', notes: '' });
+                setAvailabilityMessage('');
+                setAvailabilityError('');
+            };
+
+            const allServices = [...(services.women || []), ...(services.men || [])];
+
+            return (
+                <div className="page active">
+                    <section className="page-header">
+                        <div className="container">
+                            <h1>Reservar Cita</h1>
+                            <p>Completa el formulario y nos pondremos en contacto contigo</p>
+                        </div>
+                    </section>
+
+                    <section className="content-section">
+                        <div className="container">
+                            <div className="form-container">
+                                <form onSubmit={handleSubmit}>
+                                    <div className="form-group">
+                                        <label>👤 Nombre Completo *</label>
+                                        <input type="text" name="name" required placeholder="Tu nombre" 
+                                               value={formData.name} onChange={handleChange} />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>📧 Correo Electrónico *</label>
+                                        <input type="email" name="email" required placeholder="tu@email.com"
+                                               value={formData.email} onChange={handleChange} />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>📞 Teléfono *</label>
+                                        <input type="tel" name="phone" required placeholder="+34 123 456 789"
+                                               value={formData.phone} onChange={handleChange} />
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>Servicio *</label>
+                                        <select name="service_id" required value={formData.service_id} onChange={handleChange}>
+                                            <option value="">Selecciona un servicio</option>
+                                            <optgroup label="Servicios para Mujeres">
+                                                {(services.women || []).map(s => (
+                                                    <option key={s.id} value={s.id}>{s.name} - ${s.price.toLocaleString('es-CO')}</option>
+                                                ))}
+                                            </optgroup>
+                                            <optgroup label="Servicios para Hombres">
+                                                {(services.men || []).map(s => (
+                                                    <option key={s.id} value={s.id}>{s.name} - ${s.price.toLocaleString('es-CO')}</option>
+                                                ))}
+                                            </optgroup>
+                                        </select>
+                                    </div>
+
+                                    <div className="form-row">
+                                        <div className="form-group">
+                                            <label>📅 Fecha *</label>
+                                            <input type="date" name="date" required value={formData.date} onChange={handleChange} />
+                                        </div>
+                                        <div className="form-group">
+                                            <label>🕐 Hora *</label>
+                                            <select name="time" required value={formData.time} onChange={handleChange}>
+                                                <option value="">Selecciona una hora</option>
+                                                {['10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00', '18:00', '19:00'].map(time => (
+                                                    <option key={time} value={time}>{time}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                                        <button 
+                                            type="button" 
+                                            className="btn btn-gradient"
+                                            onClick={checkAvailability}
+                                            disabled={availabilityChecking}
+                                        >
+                                            {availabilityChecking ? '⏳ Verificando...' : '🔍 Verificar Disponibilidad'}
+                                        </button>
+                                        {availabilityMessage && <p style={{ color: '#10b981', fontSize: '0.875rem', marginTop: '0.5rem' }}>{availabilityMessage}</p>}
+                                        {availabilityError && <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.5rem' }}>{availabilityError}</p>}
+                                    </div>
+
+                                    <div className="form-group">
+                                        <label>💬 Notas adicionales (opcional)</label>
+                                        <textarea name="notes" rows="4" placeholder="Cuéntanos sobre tu estilo deseado..."
+                                                  value={formData.notes} onChange={handleChange}></textarea>
+                                    </div>
+
+                                    <button type="submit" className="btn btn-gradient btn-full">Confirmar Reserva</button>
+                                </form>
+
+                                <div className="info-box" style={{ marginTop: '2rem' }}>
+                                    <h3>Información importante:</h3>
+                                    <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
+                                        <li>• Te contactaremos en las próximas 24 horas para confirmar tu cita</li>
+                                        <li>• Los tiempos de servicio pueden variar según el estilo elegido</li>
+                                        <li>• Te recomendamos llegar con el cabello limpio y seco</li>
+                                        <li>• Si necesitas cancelar, por favor avísanos con 24 horas de anticipación</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            );
+        };
+    </script>
+
+    <!-- Admin Login Component -->
+    <script type="text/babel">
+        const AdminLogin = ({ onLogin }) => {
+            const [password, setPassword] = React.useState('');
+            const [error, setError] = React.useState('');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (onLogin(password)) {
+                    setPassword('');
+                } else {
+                    setError('Contraseña incorrecta');
+                    setPassword('');
+                }
+            };
+
+            return (
+                <div className="page active">
+                    <div className="admin-login">
+                        <div className="admin-login-card">
+                            <div className="admin-login-header">
+                                <div className="admin-icon">👤</div>
+                                <h1>Panel de Administración</h1>
+                                <p>Kika Braids</p>
+                            </div>
+                            <form onSubmit={handleSubmit}>
+                                <div className="form-group">
+                                    <label>🔒 Contraseña</label>
+                                    <input type="password" required placeholder="Ingresa tu contraseña"
+                                           value={password} onChange={(e) => { setPassword(e.target.value); setError(''); }} />
+                                </div>
+                                {error && <p style={{ color: '#ef4444', fontSize: '0.875rem', textAlign: 'center' }}>{error}</p>}
+                                <button type="submit" className="btn btn-gradient btn-full">Iniciar Sesión</button>
                             </form>
+                            <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
+                                Contraseña de ejemplo: kikabraids2026
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+    </script>
+
+    <!-- Admin Dashboard Component -->
+    <script type="text/babel">
+        const AdminDashboard = ({ bookings, services, stats, onLogout, onCompleteBooking, onDeleteBooking, onAddProduct, onUpdateProduct, onDeleteProduct }) => {
+            const [activeTab, setActiveTab] = React.useState('bookings');
+            const [showAddProduct, setShowAddProduct] = React.useState(false);
+            const [editingProduct, setEditingProduct] = React.useState(null);
+            const [newProduct, setNewProduct] = React.useState({
+                name: '',
+                price: '',
+                description: '',
+                image: '',
+                category: 'women'
+            });
+
+            const handleAddProduct = async (e) => {
+                e.preventDefault();
+                if (editingProduct) {
+                    await onUpdateProduct(editingProduct.id, {
+                        name: newProduct.name,
+                        price: parseInt(newProduct.price),
+                        description: newProduct.description,
+                        image: newProduct.image,
+                        category: newProduct.category
+                    });
+                    setEditingProduct(null);
+                } else {
+                    await onAddProduct({
+                        name: newProduct.name,
+                        price: parseInt(newProduct.price),
+                        description: newProduct.description,
+                        image: newProduct.image,
+                        category: newProduct.category
+                    });
+                }
+                setNewProduct({ name: '', price: '', description: '', image: '', category: 'women' });
+                setShowAddProduct(false);
+            };
+
+            const startEdit = (product) => {
+                setEditingProduct(product);
+                setNewProduct(product);
+                setShowAddProduct(true);
+            };
+
+            const allProducts = [...(services.women || []).map(p => ({...p, category: 'women'})), 
+                                 ...(services.men || []).map(p => ({...p, category: 'men'}))];
+
+            return (
+                <div className="page active">
+                    <header className="admin-header">
+                        <div className="container">
+                            <div className="admin-header-content">
+                                <div>
+                                    <h1 className="admin-title">Panel de Administración</h1>
+                                    <p className="admin-subtitle">Kika Braids</p>
+                                </div>
+                                <button className="btn btn-danger" onClick={onLogout}>🚪 Cerrar Sesión</button>
+                            </div>
+                        </div>
+                    </header>
+
+                    <main className="admin-main">
+                        <div className="container">
+                            <div className="stats-grid">
+                                <div className="stat-card">
+                                    <div className="stat-content">
+                                        <div>
+                                            <p className="stat-label">Reservas Pendientes</p>
+                                            <p className="stat-value">{stats.pending}</p>
+                                        </div>
+                                        <div className="stat-icon">🕐</div>
+                                    </div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-content">
+                                        <div>
+                                            <p className="stat-label">Total Reservas</p>
+                                            <p className="stat-value">{stats.total}</p>
+                                        </div>
+                                        <div className="stat-icon">📅</div>
+                                    </div>
+                                </div>
+                                <div className="stat-card">
+                                    <div className="stat-content">
+                                        <div>
+                                            <p className="stat-label">Ingresos Completados</p>
+                                            <p className="stat-value">${stats.revenue?.toLocaleString('es-CO')}</p>
+                                        </div>
+                                        <div className="stat-icon">📈</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="admin-tabs">
+                                <div className="tabs-header">
+                                    <button className={`tab-btn ${activeTab === 'bookings' ? 'active' : ''}`} 
+                                            onClick={() => setActiveTab('bookings')}>
+                                        📅 Reservas
+                                    </button>
+                                    <button className={`tab-btn ${activeTab === 'products' ? 'active' : ''}`} 
+                                            onClick={() => setActiveTab('products')}>
+                                        📦 Productos/Servicios
+                                    </button>
+                                </div>
+
+                                {activeTab === 'bookings' && (
+                                    <div className="tab-content active">
+                                        {bookings.length === 0 ? (
+                                            <p style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>No hay reservas aún</p>
+                                        ) : (
+                                            bookings.map(booking => (
+                                                <div key={booking.id} style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1rem' }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                                        <div>
+                                                            <h3 style={{ margin: 0, fontSize: '1.125rem' }}>{booking.name}</h3>
+                                                            <p style={{ margin: '0.25rem 0', color: '#666', fontSize: '0.875rem' }}>{booking.service_name}</p>
+                                                        </div>
+                                                        <span style={{ background: booking.status === 'pending' ? '#fef3c7' : '#d1fae5', color: booking.status === 'pending' ? '#92400e' : '#065f46', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: '600' }}>
+                                                            {booking.status === 'pending' ? 'Pendiente' : 'Completada'}
+                                                        </span>
+                                                    </div>
+                                                    <div style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
+                                                        <p><strong>📧 Email:</strong> {booking.email}</p>
+                                                        <p><strong>📞 Teléfono:</strong> {booking.phone}</p>
+                                                        <p><strong>💰 Precio:</strong> ${booking.price?.toLocaleString('es-CO')}</p>
+                                                        <p><strong>📅 Fecha:</strong> {booking.date} a las {booking.time}</p>
+                                                    </div>
+                                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                        <button className="btn btn-small" 
+                                                                onClick={() => onCompleteBooking(booking.id)}
+                                                                disabled={booking.status === 'completed'}>
+                                                            ✓ Completar
+                                                        </button>
+                                                        <button className="btn btn-small btn-danger" 
+                                                                onClick={() => onDeleteBooking(booking.id)}>
+                                                            🗑️ Eliminar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                )}
+
+                                {activeTab === 'products' && (
+                                    <div className="tab-content active">
+                                        <div className="tab-header">
+                                            <h2>Servicios Disponibles</h2>
+                                            <button className="btn btn-gradient" onClick={() => { setEditingProduct(null); setNewProduct({ name: '', price: '', description: '', image: '', category: 'women' }); setShowAddProduct(!showAddProduct); }}>
+                                                ➕ Agregar Servicio
+                                            </button>
+                                        </div>
+
+                                        {showAddProduct && (
+                                            <div style={{ background: '#f9fafb', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
+                                                <h3>{editingProduct ? 'Editar Servicio' : 'Nuevo Servicio'}</h3>
+                                                <form onSubmit={handleAddProduct}>
+                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                                                        <input type="text" placeholder="Nombre del servicio *" required
+                                                               value={newProduct.name} onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} />
+                                                        <input type="number" placeholder="Precio *" required
+                                                               value={newProduct.price} onChange={(e) => setNewProduct({...newProduct, price: e.target.value})} />
+                                                    </div>
+                                                    <textarea placeholder="Descripción" rows="3" style={{ width: '100%', marginBottom: '1rem', padding: '0.5rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                                                              value={newProduct.description} onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}></textarea>
+                                                    <input type="url" placeholder="URL de imagen" style={{ width: '100%', marginBottom: '1rem', padding: '0.5rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                                                           value={newProduct.image} onChange={(e) => setNewProduct({...newProduct, image: e.target.value})} />
+                                                    <select style={{ width: '100%', marginBottom: '1rem', padding: '0.5rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                                                            value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}>
+                                                        <option value="women">Mujer</option>
+                                                        <option value="men">Hombre</option>
+                                                    </select>
+                                                    <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                                        <button type="submit" className="btn btn-success">✓ {editingProduct ? 'Guardar Cambios' : 'Guardar'}</button>
+                                                        <button type="button" className="btn btn-secondary" onClick={() => setShowAddProduct(false)}>✗ Cancelar</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        )}
+
+                                        <div className="products-grid">
+                                            {allProducts.map(product => (
+                                                <div key={product.id} style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1rem', background: 'white' }}>
+                                                    <h4 style={{ margin: '0 0 0.5rem 0' }}>{product.name}</h4>
+                                                    <p style={{ margin: '0.5rem 0', color: '#666', fontSize: '0.875rem' }}>{product.description}</p>
+                                                    <p style={{ margin: '0.5rem 0', color: 'var(--purple)', fontWeight: '600', fontSize: '1.25rem' }}>
+                                                        ${product.price?.toLocaleString('es-CO')}
+                                                    </p>
+                                                    <p style={{ margin: '0.5rem 0', color: '#666', fontSize: '0.875rem' }}>
+                                                        {product.category === 'women' ? '👩 Servicio para Mujeres' : '👨 Servicio para Hombres'}
+                                                    </p>
+                                                    <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+                                                        <button className="btn btn-small" style={{ flex: 1 }} onClick={() => startEdit(product)}>Editar</button>
+                                                        <button className="btn btn-small btn-danger" style={{ flex: 1 }} 
+                                                                onClick={() => onDeleteProduct(product.id)}>
+                                                            Eliminar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+    </script>
+
+    <!-- Footer Component -->
+    <script type="text/babel">
+        const Footer = ({ onNavigate }) => (
+            <footer id="footer">
+                <div className="container">
+                    <div className="footer-grid">
+                        <div>
+                            <h3 className="footer-title">Kika Braids</h3>
+                            <p className="footer-text">Especialistas en peinados afro, trenzas y extensiones para mujeres y hombres.</p>
+                            <div className="social-links">
+                                <a href="#" className="social-link">📷</a>
+                                <a href="#" className="social-link">📘</a>
+                            </div>
                         </div>
 
-                        <div id="products-list" class="products-grid"></div>
+                        <div>
+                            <h4 className="footer-heading">Contacto</h4>
+                            <div className="footer-info">
+                                <p>📞 +34 123 456 789</p>
+                                <p>📧 info@kikabraids.com</p>
+                                <p>📍 Calle Principal 123, Madrid</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <h4 className="footer-heading">Horario</h4>
+                            <div className="footer-info">
+                                <p>Lunes - Viernes: 10:00 - 20:00</p>
+                                <p>Sábado: 10:00 - 18:00</p>
+                                <p>Domingo: Cerrado</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="footer-bottom">
+                        <p>&copy; 2026 Kika Braids. Todos los derechos reservados.</p>
+                        <a href="#" onClick={(e) => { e.preventDefault(); onNavigate('admin'); }} className="admin-link">Acceso Administrativo</a>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
+            </footer>
+        );
+    </script>
 
-    <!-- Women Page -->
-    <div id="page-women" class="page">
-        <section class="page-header">
-            <div class="container">
-                <h1>👩 Servicios para Mujeres</h1>
-                <p>Peinados afro, trenzas y extensiones diseñadas para realzar tu belleza natural</p>
-            </div>
-        </section>
+    <!-- Main App Component -->
+    <script type="text/babel">
+        const App = () => {
+            const [currentPage, setCurrentPage] = React.useState('home');
+            const [selectedService, setSelectedService] = React.useState(null);
+            const [services, setServices] = React.useState({ women: [], men: [] });
+            const [bookings, setBookings] = React.useState([]);
+            const [stats, setStats] = React.useState({ pending: 0, total: 0, revenue: 0 });
+            const [adminAuthenticated, setAdminAuthenticated] = React.useState(false);
+            const [toastMessage, setToastMessage] = React.useState('');
+            const [toastType, setToastType] = React.useState('success');
+            const [showToast, setShowToast] = React.useState(false);
+            const [loading, setLoading] = React.useState(true);
 
-        <section class="content-section">
-            <div class="container">
-                <div class="services-grid" id="women-services-page"></div>
-            </div>
-        </section>
+            // Cargar datos
+            React.useEffect(() => {
+                loadData();
+                const interval = setInterval(loadData, 5000); // Refresh cada 5 segundos
+                return () => clearInterval(interval);
+            }, []);
 
-        <section class="content-section alt">
-            <div class="container">
-                <div class="info-box">
-                    <h2>¿Por qué elegir nuestros servicios?</h2>
-                    <div class="info-content">
-                        <p>✨ <strong>Estilo Personalizado:</strong> Cada look se adapta a tu tipo de cabello y preferencias</p>
-                        <p>💎 <strong>Extensiones Premium:</strong> Utilizamos las mejores extensiones del mercado</p>
-                        <p>👱 <strong>Profesionales Expertas:</strong> Nuestro equipo tiene años de experiencia</p>
-                        <p>🕐 <strong>Duración:</strong> Nuestros trabajos duran 4-8 semanas con el cuidado adecuado</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+            const loadData = async () => {
+                try {
+                    const [servicesRes, bookingsRes, statsRes] = await Promise.all([
+                        api.getServices(),
+                        api.getBookings(),
+                        api.getStats()
+                    ]);
+                    
+                    setServices(servicesRes);
+                    setBookings(bookingsRes);
+                    setStats(statsRes);
+                    setLoading(false);
+                } catch (err) {
+                    console.error('Error cargando datos:', err);
+                    showToastMessage('Error al conectar con el servidor', 'error');
+                }
+            };
 
-        <section class="content-section">
-            <div class="container text-center">
-                <button class="btn btn-gradient" onclick="showPage('booking')">Reservar Cita</button>
-            </div>
-        </section>
-    </div>
+            const showToastMessage = (message, type = 'success') => {
+                setToastMessage(message);
+                setToastType(type);
+                setShowToast(true);
+                setTimeout(() => setShowToast(false), 3000);
+            };
 
-    <!-- Men Page -->
-    <div id="page-men" class="page">
-        <section class="page-header">
-            <div class="container">
-                <h1>👨 Servicios para Hombres</h1>
-                <p>Trenzas, gusanillos y tratamientos especializados con estilo masculino</p>
-            </div>
-        </section>
+            const handleNavigate = (page) => {
+                setCurrentPage(page);
+                window.scrollTo(0, 0);
+            };
 
-        <section class="content-section">
-            <div class="container">
-                <div class="services-grid" id="men-services-page"></div>
-            </div>
-        </section>
+            const handleBook = (service) => {
+                setSelectedService(service);
+                handleNavigate('booking');
+            };
 
-        <section class="content-section alt">
-            <div class="container">
-                <div class="info-box">
-                    <h2>Servicios de Calidad para Hombres</h2>
-                    <div class="info-content">
-                        <p>✨ <strong>Diseños Modernos:</strong> Desde trenzas clásicas hasta gusanillos con estilo</p>
-                        <p>💪 <strong>Mantenimiento Fácil:</strong> Nuestros trabajos son prácticos y de bajo mantenimiento</p>
-                        <p>🎯 <strong>Profesionales Expertos:</strong> Especializados en cabello masculino afro</p>
-                        <p>🕐 <strong>Duración:</strong> Las trenzas duram 6-12 semanas según el cuidado</p>
-                    </div>
-                </div>
-            </div>
-        </section>
+            const handleBookingSubmit = async (formData) => {
+                try {
+                    await api.createBooking(formData);
+                    showToastMessage('¡Reserva enviada! El administrador se pondrá en contacto pronto.');
+                    await loadData();
+                    setTimeout(() => handleNavigate('home'), 2000);
+                } catch (err) {
+                    showToastMessage(err.message || 'Error al crear la reserva', 'error');
+                }
+            };
 
-        <section class="content-section">
-            <div class="container text-center">
-                <button class="btn btn-gradient" onclick="showPage('booking')">Reservar Cita</button>
-            </div>
-        </section>
-    </div>
+            const handleAdminLogin = (password) => {
+                if (password === 'kikabraids2026') {
+                    setAdminAuthenticated(true);
+                    showToastMessage('Sesión iniciada correctamente');
+                    handleNavigate('admin-dashboard');
+                    return true;
+                }
+                return false;
+            };
 
-    <!-- Footer -->
-    <footer id="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div>
-                    <h3 class="footer-title">Kika Braids</h3>
-                    <p class="footer-text">Especialistas en peinados afro, trenzas y extensiones para mujeres y hombres.</p>
-                    <div class="social-links">
-                        <a href="#" class="social-link">📷</a>
-                        <a href="#" class="social-link">📘</a>
-                    </div>
-                </div>
+            const handleAdminLogout = () => {
+                setAdminAuthenticated(false);
+                showToastMessage('Sesión cerrada');
+                handleNavigate('home');
+            };
 
-                <div>
-                    <h4 class="footer-heading">Contacto</h4>
-                    <div class="footer-info">
-                        <p>📞 +34 123 456 789</p>
-                        <p>📧 info@kikabraids.com</p>
-                        <p>📍 Calle Principal 123, Madrid</p>
-                    </div>
-                </div>
+            const handleCompleteBooking = async (bookingId) => {
+                try {
+                    await api.updateBooking(bookingId, 'completed');
+                    showToastMessage('Reserva marcada como completada');
+                    await loadData();
+                } catch (err) {
+                    showToastMessage('Error al actualizar reserva', 'error');
+                }
+            };
 
-                <div>
-                    <h4 class="footer-heading">Horario</h4>
-                    <div class="footer-info">
-                        <p>Lunes - Viernes: 10:00 - 20:00</p>
-                        <p>Sábado: 10:00 - 18:00</p>
-                        <p>Domingo: Cerrado</p>
-                    </div>
-                </div>
-            </div>
+            const handleDeleteBooking = async (bookingId) => {
+                if (confirm('¿Estás seguro de que deseas eliminar esta reserva?')) {
+                    try {
+                        await api.deleteBooking(bookingId);
+                        showToastMessage('Reserva eliminada');
+                        await loadData();
+                    } catch (err) {
+                        showToastMessage('Error al eliminar reserva', 'error');
+                    }
+                }
+            };
 
-            <div class="footer-bottom">
-                <p>&copy; 2026 Kika Braids. Todos los derechos reservados.</p>
-                <a href="#" onclick="showPage('admin')" class="admin-link">Acceso Administrativo</a>
-            </div>
-        </div>
-    </footer>
+            const handleAddProduct = async (product) => {
+                try {
+                    await api.createService(product);
+                    showToastMessage('Servicio agregado exitosamente');
+                    await loadData();
+                } catch (err) {
+                    showToastMessage('Error al agregar servicio', 'error');
+                }
+            };
 
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
+            const handleUpdateProduct = async (id, product) => {
+                try {
+                    await api.updateService(id, product);
+                    showToastMessage('Servicio actualizado exitosamente');
+                    await loadData();
+                } catch (err) {
+                    showToastMessage('Error al actualizar servicio', 'error');
+                }
+            };
 
-    <script src="script.js"></script>
+            const handleDeleteProduct = async (productId) => {
+                if (confirm('¿Estás seguro de que deseas eliminar este servicio?')) {
+                    try {
+                        await api.deleteService(productId);
+                        showToastMessage('Servicio eliminado');
+                        await loadData();
+                    } catch (err) {
+                        showToastMessage('Error al eliminar servicio', 'error');
+                    }
+                }
+            };
+
+            if (loading) {
+                return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '1.5rem' }}>⏳ Cargando...</div>;
+            }
+
+            return (
+                <>
+                    <Header currentPage={currentPage} onNavigate={handleNavigate} />
+                    
+                    {currentPage === 'home' && <HomePage services={services} onNavigate={handleNavigate} onBook={handleBook} />}
+                    {currentPage === 'women' && <WomenPage services={services} onBook={handleBook} />}
+                    {currentPage === 'men' && <MenPage services={services} onBook={handleBook} />}
+                    {currentPage === 'gallery' && <GalleryPage />}
+                    {currentPage === 'booking' && <BookingPage services={services} onBookingSubmit={handleBookingSubmit} selectedService={selectedService} />}
+                    
+                    {currentPage === 'admin' && !adminAuthenticated && <AdminLogin onLogin={handleAdminLogin} />}
+                    {currentPage === 'admin-dashboard' && adminAuthenticated && (
+                        <AdminDashboard 
+                            bookings={bookings} 
+                            services={services}
+                            stats={stats}
+                            onLogout={handleAdminLogout}
+                            onCompleteBooking={handleCompleteBooking}
+                            onDeleteBooking={handleDeleteBooking}
+                            onAddProduct={handleAddProduct}
+                            onUpdateProduct={handleUpdateProduct}
+                            onDeleteProduct={handleDeleteProduct}
+                        />
+                    )}
+
+                    <Footer onNavigate={handleNavigate} />
+                    
+                    <Toast message={toastMessage} type={toastType} visible={showToast} />
+                </>
+            );
+        };
+
+        // Renderizar la aplicación
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 </body>
 </html>
