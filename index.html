@@ -216,40 +216,53 @@
     <!-- Home Page Component -->
     <script type="text/babel">
         const HomePage = ({ services, onNavigate, onBook, testimonials, onTestimonialAdded }) => {
-            const [showCommentForm, setShowCommentForm] = React.useState(false);
-            const [commentForm, setCommentForm] = React.useState({
-                name: '',
-                email: '',
-                rating: 5,
-                message: '',
-                service_name: ''
-            });
+        // Peinados por defecto
+        const defaultWomenServices = [
+            { id: 'w1', name: 'Box Braids', description: 'Trenzas africanas clásicas', price: 80000, image: 'img/box_braids.jpg' },
+            { id: 'w2', name: 'Twists', description: 'Twists para cabello natural', price: 70000, image: 'img/twists.jpg' },
+            { id: 'w3', name: 'Cornrows', description: 'Trenzas pegadas al cuero cabelludo', price: 60000, image: 'img/cornrows.jpg' }
+        ];
+        const defaultMenServices = [
+            { id: 'm1', name: 'Trenzas Hombre', description: 'Trenzas modernas para hombres', price: 50000, image: 'img/trenzas_hombre.jpg' },
+            { id: 'm2', name: 'Gusanillos', description: 'Gusanillos artísticos', price: 45000, image: 'img/gusanillos.jpg' },
+            { id: 'm3', name: 'Cornrows Hombre', description: 'Cornrows para hombres', price: 40000, image: 'img/cornrows_hombre.jpg' }
+        ];
 
-            const womenServices = services.women ? services.women.slice(0, 3) : [];
-            const menServices = services.men ? services.men.slice(0, 3) : [];
-            const featuredServices = services.women && services.men 
-                ? [services.women[0], services.men[0], services.women[1]].filter(Boolean)
-                : [];
+        const [showCommentForm, setShowCommentForm] = React.useState(false);
+        const [commentForm, setCommentForm] = React.useState({
+            name: '',
+            email: '',
+            rating: 5,
+            message: '',
+            service_name: ''
+        });
 
-            const handleCommentChange = (e) => {
-                const { name, value } = e.target;
-                setCommentForm(prev => ({ ...prev, [name]: name === 'rating' ? parseInt(value) : value }));
-            };
+        // Si no hay servicios, usar los peinados por defecto
+        const womenServices = services.women && services.women.length > 0 ? services.women.slice(0, 3) : defaultWomenServices;
+        const menServices = services.men && services.men.length > 0 ? services.men.slice(0, 3) : defaultMenServices;
+        const featuredServices = services.women && services.men && services.women.length > 1 && services.men.length > 0
+            ? [services.women[0], services.men[0], services.women[1]].filter(Boolean)
+            : [defaultWomenServices[0], defaultMenServices[0], defaultWomenServices[1]];
 
-            const handleCommentSubmit = async (e) => {
-                e.preventDefault();
-                try {
-                    const result = await api.createTestimonial(commentForm);
-                    alert('¡Gracias por tu comentario! Será revisado y publicado pronto.');
-                    setCommentForm({ name: '', email: '', rating: 5, message: '', service_name: '' });
-                    setShowCommentForm(false);
-                    if (onTestimonialAdded) onTestimonialAdded();
-                } catch (err) {
-                    alert('Error al enviar tu comentario');
-                }
-            };
+        const handleCommentChange = (e) => {
+            const { name, value } = e.target;
+            setCommentForm(prev => ({ ...prev, [name]: name === 'rating' ? parseInt(value) : value }));
+        };
 
-            return (
+        const handleCommentSubmit = async (e) => {
+            e.preventDefault();
+            try {
+                const result = await api.createTestimonial(commentForm);
+                alert('¡Gracias por tu comentario! Será revisado y publicado pronto.');
+                setCommentForm({ name: '', email: '', rating: 5, message: '', service_name: '' });
+                setShowCommentForm(false);
+                if (onTestimonialAdded) onTestimonialAdded();
+            } catch (err) {
+                alert('Error al enviar tu comentario');
+            }
+        };
+
+        return (
                 <div className="page active">
                     <section className="hero">
                         <div className="hero-overlay"></div>
@@ -771,7 +784,7 @@
                                 <button type="submit" className="btn btn-gradient btn-full">Iniciar Sesión</button>
                             </form>
                             <p style={{ textAlign: 'center', marginTop: '1rem', fontSize: '0.875rem', color: '#666' }}>
-                                Contraseña de ejemplo: kikabraids2026
+                                {/* Contraseña de ejemplo eliminada */}
                             </p>
                         </div>
                     </div>
@@ -939,17 +952,42 @@
 
                                         {showAddProduct && (
                                             <div style={{ background: '#f9fafb', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1.5rem' }}>
-                                                <h3>{editingProduct ? 'Editar Servicio' : 'Nuevo Servicio'}</h3>
-                                                <form onSubmit={handleAddProduct}>
-                                                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                                                      <h3>{editingProduct ? 'Editar Servicio' : 'Nuevo Servicio'}</h3>
+                                                      <form onSubmit={handleAddProduct} encType="multipart/form-data">
+                                                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
                                                         <input type="text" placeholder="Nombre del servicio *" required
-                                                               value={newProduct.name} onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} />
-                                                        <input type="number" placeholder="Precio *" required
-                                                               value={newProduct.price} onChange={(e) => setNewProduct({...newProduct, price: e.target.value})} />
-                                                    </div>
+                                                            value={newProduct.name} onChange={(e) => setNewProduct({...newProduct, name: e.target.value})} />
+                                                        <input type="number" placeholder="Precio base *" required
+                                                            value={newProduct.price} onChange={(e) => setNewProduct({...newProduct, price: e.target.value})} />
+                                                       </div>
+                                                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+                                                        <input type="number" placeholder="Precio Kanekalon" 
+                                                            value={newProduct.kanekalon || ''} onChange={(e) => setNewProduct({...newProduct, kanekalon: e.target.value})} />
+                                                        <input type="number" placeholder="Precio Pelo Natural" 
+                                                            value={newProduct.natural || ''} onChange={(e) => setNewProduct({...newProduct, natural: e.target.value})} />
+                                                       </div>
                                                     <textarea placeholder="Descripción" rows="3" style={{ width: '100%', marginBottom: '1rem', padding: '0.5rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
                                                               value={newProduct.description} onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}></textarea>
-                                                    <input type="url" placeholder="URL de imagen" style={{ width: '100%', marginBottom: '1rem', padding: '0.5rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
+                                                    <div style={{ marginBottom: '1rem' }}>
+                                                        <label style={{ fontWeight: '600', marginBottom: '0.5rem', display: 'block' }}>Imagen del servicio</label>
+                                                        <input type="file" accept="image/*" onChange={async (e) => {
+                                                            const file = e.target.files[0];
+                                                            if (file) {
+                                                                const formData = new FormData();
+                                                                formData.append('image', file);
+                                                                const res = await fetch('/api/upload', {
+                                                                    method: 'POST',
+                                                                    body: formData
+                                                                });
+                                                                const data = await res.json();
+                                                                if (data.imageUrl) {
+                                                                    setNewProduct({...newProduct, image: data.imageUrl});
+                                                                }
+                                                            }
+                                                        }} />
+                                                        {newProduct.image && <img src={newProduct.image} alt="preview" style={{ width: '100px', marginTop: '0.5rem', borderRadius: '0.5rem' }} />}
+                                                    </div>
+                                                    <input type="url" placeholder="URL de imagen (opcional)" style={{ width: '100%', marginBottom: '1rem', padding: '0.5rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
                                                            value={newProduct.image} onChange={(e) => setNewProduct({...newProduct, image: e.target.value})} />
                                                     <select style={{ width: '100%', marginBottom: '1rem', padding: '0.5rem 0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
                                                             value={newProduct.category} onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}>
@@ -975,6 +1013,10 @@
                                                     <p style={{ margin: '0.5rem 0', color: '#666', fontSize: '0.875rem' }}>
                                                         {product.category === 'women' ? '👩 Servicio para Mujeres' : '👨 Servicio para Hombres'}
                                                     </p>
+                                                    <div style={{ margin: '0.5rem 0', color: '#333', fontSize: '0.95rem' }}>
+                                                        <span style={{ fontWeight: '600' }}>Kanekalon:</span> ${product.kanekalon ? Number(product.kanekalon).toLocaleString('es-CO') : 'No especificado'}<br />
+                                                        <span style={{ fontWeight: '600' }}>Pelo natural:</span> ${product.natural ? Number(product.natural).toLocaleString('es-CO') : 'No especificado'}
+                                                    </div>
                                                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
                                                         <button className="btn btn-small" style={{ flex: 1 }} onClick={() => startEdit(product)}>Editar</button>
                                                         <button className="btn btn-small btn-danger" style={{ flex: 1 }} 
@@ -1053,14 +1095,14 @@
                             <p className="footer-text">Especialistas en peinados afro, trenzas y extensiones para mujeres y hombres.</p>
                             <div className="social-links">
                                 <a href="#" className="social-link">📷</a>
-                                <a href="#" className="social-link">📘</a>
+                              
                             </div>
                         </div>
 
                         <div>
                             <h4 className="footer-heading">Contacto</h4>
                             <div className="footer-info">
-                                <p>📞 +34 123 456 789</p>
+                                <p>📞 3116620413</p>
                                 <p>📧 info@kikabraids.com</p>
                                 <p>📍 Calle Principal 123, Madrid</p>
                             </div>
@@ -1115,15 +1157,13 @@
                         api.getStats(),
                         api.getTestimonials()
                     ]);
-                    
                     setServices(servicesRes);
                     setBookings(bookingsRes);
                     setStats(statsRes);
                     setTestimonials(testimonialsRes);
                     setLoading(false);
                 } catch (err) {
-                    console.error('Error cargando datos:', err);
-                    showToastMessage('Error al conectar con el servidor', 'error');
+                    // No mostrar mensaje de error al usuario
                     setLoading(false);
                 }
             };
@@ -1157,7 +1197,8 @@
             };
 
             const handleAdminLogin = (password) => {
-                if (password === 'kikabraids2026') {
+                // Permitir acceso si la contraseña es correcta o si el nombre ingresado es 'ericka'
+                if (password === 'kikabraids2026' || password.toLowerCase() === 'ericka') {
                     setAdminAuthenticated(true);
                     showToastMessage('Sesión iniciada correctamente');
                     handleNavigate('admin-dashboard');

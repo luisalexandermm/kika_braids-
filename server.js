@@ -74,29 +74,26 @@ function initializeDatabase() {
     `);
 
     // Insertar servicios iniciales si no existen
-    db.all("SELECT COUNT(*) as count FROM services", (err, rows) => {
-        if (rows && rows[0].count === 0) {
-            const initialServices = [
-                { name: 'Trenzas Africanas', price: 150000, description: 'Trenzas clásicas africanas con diseño tradicional', image: 'https://images.unsplash.com/photo-1590080876-a970b5f0f18d?w=500&h=500&fit=crop', category: 'women' },
-                { name: 'Trenzas Box Braids', price: 180000, description: 'Box braids premium con extensiones de calidad superior', image: 'https://images.unsplash.com/photo-1589556124516-d02b90a6a4c4?w=500&h=500&fit=crop', category: 'women' },
-                { name: 'Extensiones Afro', price: 200000, description: 'Extensiones de cabello afro 100% natural instaladas profesionalmente', image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=500&h=500&fit=crop', category: 'women' },
-                { name: 'Loc o Ganchillos', price: 160000, description: 'Loc y ganchillos instalados con técnica profesional', image: 'https://images.unsplash.com/photo-1599058917000-b6daf30129e0?w=500&h=500&fit=crop', category: 'women' },
-                { name: 'Peinado Natural', price: 85000, description: 'Definición y peinado natural con productos especializados', image: 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=500&h=500&fit=crop', category: 'women' },
-                { name: 'Alisado Japonés', price: 220000, description: 'Alisado profesional con tratamientos premium importados', image: 'https://images.unsplash.com/photo-1599058917211-e3e4c7d8f0d5?w=500&h=500&fit=crop', category: 'women' },
-                { name: 'Trenzas Hombre', price: 120000, description: 'Trenzas personalizadas para hombres con diseño moderno', image: 'https://images.unsplash.com/photo-1600132169912-8c5a5522159d?w=500&h=500&fit=crop', category: 'men' },
-                { name: 'Gusanillos', price: 100000, description: 'Gusanillos con diseño artístico y acabado profesional', image: 'https://images.unsplash.com/photo-1599059917000-9c6a4db03d4f?w=500&h=500&fit=crop', category: 'men' },
-                { name: 'Definición de Crespo', price: 80000, description: 'Definición y cuidado especializado de cabello crespo', image: 'https://images.unsplash.com/photo-1600132169912-1dd88b0e9f7d?w=500&h=500&fit=crop', category: 'men' },
-                { name: 'Loc Hombre', price: 140000, description: 'Loc profesional para hombres con técnica experta', image: 'https://images.unsplash.com/photo-1599058917130-8c0d4c4d5e0f?w=500&h=500&fit=crop', category: 'men' },
-                { name: 'Corte y Definición', price: 95000, description: 'Corte con líneas perfectas y definición de bordes', image: 'https://images.unsplash.com/photo-1599058916000-987a57f00ed1?w=500&h=500&fit=crop', category: 'men' }
-            ];
-
-            initialServices.forEach(service => {
+    db.all("SELECT name FROM services", (err, rows) => {
+        const existingNames = rows ? rows.map(r => r.name) : [];
+        const initialServices = [
+            { name: 'Box Braids', price: 80000, description: 'Trenzas africanas clásicas', image: '', category: 'women' },
+            { name: 'Twists', price: 70000, description: 'Twists para cabello natural', image: '', category: 'women' },
+            { name: 'Cornrows', price: 60000, description: 'Trenzas pegadas al cuero cabelludo', image: '', category: 'women' },
+            { name: 'Trenzas Hombre', price: 50000, description: 'Trenzas modernas para hombres', image: '', category: 'men' },
+            { name: 'Gusanillos', price: 45000, description: 'Gusanillos artísticos', image: '', category: 'men' },
+            { name: 'Cornrows Hombre', price: 40000, description: 'Cornrows para hombres', image: '', category: 'men' }
+        ];
+        initialServices.forEach(service => {
+            if (!existingNames.includes(service.name)) {
                 db.run(
                     'INSERT INTO services (name, price, description, image, category) VALUES (?, ?, ?, ?, ?)',
                     [service.name, service.price, service.description, service.image, service.category]
                 );
-            });
-            console.log('✅ Servicios iniciales insertados');
+            }
+        });
+        if (initialServices.length > 0) {
+            console.log('✅ Peinados por defecto insertados si faltaban');
         }
     });
 
@@ -121,6 +118,38 @@ function initializeDatabase() {
 }
 
 // ==================== ENDPOINTS DE SERVICIOS ====================
+// Endpoint para subir imágenes
+const multer = require('multer');
+const upload = multer({
+    dest: path.join(__dirname, 'img'),
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Solo se permiten imágenes'));
+        }
+    }
+});
+
+app.post('/api/upload', upload.single('image'), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No se subió ningún archivo' });
+    }
+    // Guardar el nombre del archivo
+    const filename = req.file.filename;
+    const ext = path.extname(req.file.originalname);
+    const newFilename = filename + ext;
+    const oldPath = req.file.path;
+    const newPath = path.join(req.file.destination, newFilename);
+    // Renombrar para conservar extensión
+    require('fs').rename(oldPath, newPath, (err) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al guardar imagen' });
+        }
+        res.json({ imageUrl: '/img/' + newFilename });
+    });
+});
 
 // Obtener todos los servicios
 app.get('/api/services', (req, res) => {
