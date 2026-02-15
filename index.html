@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kika Braids - Peinados Afro y Trenzas</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo" onclick="showPage('home')">
+                    <div class="logo-icon">KB</div>
+                    <span class="logo-text">Kika Braids</span>
+                </a>
+                <nav class="nav-desktop">
+                    <a href="#" onclick="showPage('home')" class="nav-link active">Inicio</a>
+                    <a href="#" onclick="showPage('services')" class="nav-link">Servicios</a>
+                    <a href="#" onclick="showPage('gallery')" class="nav-link">Galería</a>
+                    <a href="#" onclick="showPage('booking')" class="nav-link">Reservar</a>
+                </nav>
+                <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                    <span class="menu-icon">☰</span>
+                </button>
+            </div>
+            <nav id="mobile-menu" class="nav-mobile">
+                <a href="#" onclick="showPage('home')" class="nav-link-mobile">Inicio</a>
+                <a href="#" onclick="showPage('services')" class="nav-link-mobile">Servicios</a>
+                <a href="#" onclick="showPage('gallery')" class="nav-link-mobile">Galería</a>
+                <a href="#" onclick="showPage('booking')" class="nav-link-mobile">Reservar</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Home Page -->
+    <div id="page-home" class="page active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-overlay"></div>
+            <img src="https://images.unsplash.com/photo-1709675154074-d33d811cd553?w=1200" alt="Kika Braids" class="hero-image">
+            <div class="hero-content">
+                <h1 class="hero-title">Kika Braids</h1>
+                <p class="hero-subtitle">Especialistas en Peinados Afro, Trenzas y Extensiones</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="showPage('booking')">Reservar Cita</button>
+                    <button class="btn btn-secondary" onclick="showPage('services')">Ver Servicios</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <div class="container">
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">✨</div>
+                        <h3>Estilo Único</h3>
+                        <p>Diseños personalizados para tu look perfecto</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <h3>Expertos Profesionales</h3>
+                        <p>Equipo con años de experiencia</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🕐</div>
+                        <h3>Horarios Flexibles</h3>
+                        <p>Adaptamos nuestro horario a tus necesidades</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🏆</div>
+                        <h3>Calidad Premium</h3>
+                        <p>Productos de la más alta calidad</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Women Services -->
+        <section class="services-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Servicios para Mujeres</h2>
+                    <p>Peinados afro, trenzas y extensiones diseñadas para realzar tu belleza natural</p>
+                </div>
+                <div id="women-services" class="services-grid"></div>
+            </div>
+        </section>
+
+        <!-- Men Services -->
+        <section class="services-section alt">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Servicios para Hombres</h2>
+                    <p>Trenzas, gusanillos y definición de crespos con estilo masculino</p>
+                </div>
+                <div id="men-services" class="services-grid"></div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <div class="container">
+                <h2>¿Lista para tu nuevo look?</h2>
+                <p>Reserva tu cita ahora y déjanos crear el estilo perfecto para ti</p>
+                <button class="btn btn-white" onclick="showPage('booking')">Reservar Ahora</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Services Page -->
+    <div id="page-services" class="page">
+        <section class="page-header">
+            <div class="container">
+                <h1>Nuestros Servicios</h1>
+                <p>Descubre todos los servicios que tenemos para ti</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <h2 class="section-title">Para Mujeres</h2>
+                <p class="section-description">Peinados afro profesionales y extensiones de alta calidad</p>
+                <div id="all-women-services" class="services-grid"></div>
+            </div>
+        </section>
+
+        <section class="content-section alt">
+            <div class="container">
+                <h2 class="section-title">Para Hombres</h2>
+                <p class="section-description">Trenzas, gusanillos y tratamientos para cabellos crespos</p>
+                <div id="all-men-services" class="services-grid"></div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="info-box">
+                    <h2>Información Importante</h2>
+                    <div class="info-content">
+                        <p>✨ <strong>Duración:</strong> Los tiempos de servicio varían según el estilo elegido (2-6 horas aproximadamente)</p>
+                        <p>💎 <strong>Calidad:</strong> Utilizamos extensiones y productos de la más alta calidad</p>
+                        <p>🎨 <strong>Personalización:</strong> Cada estilo se adapta a tus preferencias y tipo de cabello</p>
+                        <p>📅 <strong>Mantenimiento:</strong> Te asesoramos sobre cómo cuidar tu peinado para mayor duración</p>
+                        <p>💰 <strong>Precios:</strong> Los precios pueden variar según la longitud del cabello y cantidad de extensiones</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Gallery Page -->
+    <div id="page-gallery" class="page">
+        <section class="page-header">
+            <div class="container">
+                <h1>Galería de Estilos</h1>
+                <p>Descubre nuestros trabajos y encuentra tu inspiración</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div id="gallery-grid" class="gallery"></div>
+            </div>
+        </section>
+
+        <section class="content-section alt">
+            <div class="container text-center">
+                <h2>Síguenos en Instagram</h2>
+                <p style="margin-bottom: 2rem;">Encuentra más inspiración y mantente al día con nuestros últimos trabajos</p>
+                <a href="https://instagram.com" target="_blank" class="btn btn-gradient">
+                    📷 @kikabraids
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- Booking Page -->
+    <div id="page-booking" class="page">
+        <section class="page-header">
+            <div class="container">
+                <h1>Reservar Cita</h1>
+                <p>Completa el formulario y nos pondremos en contacto contigo</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="form-container">
+                    <form id="booking-form" onsubmit="handleBooking(event)">
+                        <div class="form-group">
+                            <label>👤 Nombre Completo *</label>
+                            <input type="text" name="name" required placeholder="Tu nombre">
+                        </div>
+
+                        <div class="form-group">
+                            <label>📧 Correo Electrónico *</label>
+                            <input type="email" name="email" required placeholder="tu@email.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label>📞 Teléfono *</label>
+                            <input type="tel" name="phone" required placeholder="+34 123 456 789">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Servicio *</label>
+                            <select name="service" id="service-select" required>
+                                <option value="">Selecciona un servicio</option>
+                            </select>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>📅 Fecha *</label>
+                                <input type="date" name="date" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>🕐 Hora *</label>
+                                <select name="time" required>
+                                    <option value="">Selecciona una hora</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
+                                    <option value="19:00">19:00</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>💬 Notas adicionales (opcional)</label>
+                            <textarea name="notes" rows="4" placeholder="Cuéntanos sobre tu estilo deseado, longitud del cabello, preferencias..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-gradient btn-full">Confirmar Reserva</button>
+                    </form>
+
+                    <div class="info-box" style="margin-top: 2rem;">
+                        <h3>Información importante:</h3>
+                        <ul style="list-style: none; padding: 0; margin-top: 1rem;">
+                            <li>• Te contactaremos en las próximas 24 horas para confirmar tu cita</li>
+                            <li>• Los tiempos de servicio pueden variar según el estilo elegido</li>
+                            <li>• Te recomendamos llegar con el cabello limpio y seco</li>
+                            <li>• Si necesitas cancelar, por favor avísanos con 24 horas de anticipación</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Admin Login Page -->
+    <div id="page-admin" class="page">
+        <div class="admin-login">
+            <div class="admin-login-card">
+                <div class="admin-login-header">
+                    <div class="admin-icon">👤</div>
+                    <h1>Panel de Administración</h1>
+                    <p>Kika Braids</p>
+                </div>
+                <form id="admin-login-form" onsubmit="handleAdminLogin(event)">
+                    <div class="form-group">
+                        <label>🔒 Contraseña</label>
+                        <input type="password" id="admin-password" required placeholder="Ingresa tu contraseña">
+                    </div>
+                    <button type="submit" class="btn btn-gradient btn-full">Iniciar Sesión</button>
+                </form>
+                <p style="text-align: center; margin-top: 1rem; font-size: 0.875rem; color: #666;">
+                    Contraseña de ejemplo: kikabraids2026
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Page -->
+    <div id="page-admin-dashboard" class="page">
+        <header class="admin-header">
+            <div class="container">
+                <div class="admin-header-content">
+                    <div>
+                        <h1 class="admin-title">Panel de Administración</h1>
+                        <p class="admin-subtitle">Kika Braids</p>
+                    </div>
+                    <button class="btn btn-danger" onclick="handleAdminLogout()">🚪 Cerrar Sesión</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            <div class="container">
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div>
+                                <p class="stat-label">Reservas Pendientes</p>
+                                <p class="stat-value" id="stat-pending">0</p>
+                            </div>
+                            <div class="stat-icon">🕐</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div>
+                                <p class="stat-label">Total Reservas</p>
+                                <p class="stat-value" id="stat-total">0</p>
+                            </div>
+                            <div class="stat-icon">📅</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <div>
+                                <p class="stat-label">Ingresos Completados</p>
+                                <p class="stat-value" id="stat-revenue">$0</p>
+                            </div>
+                            <div class="stat-icon">📈</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabs -->
+                <div class="admin-tabs">
+                    <div class="tabs-header">
+                        <button class="tab-btn active" onclick="showAdminTab('bookings')">
+                            📅 Reservas
+                        </button>
+                        <button class="tab-btn" onclick="showAdminTab('products')">
+                            📦 Productos/Servicios
+                        </button>
+                    </div>
+
+                    <!-- Bookings Tab -->
+                    <div id="admin-tab-bookings" class="tab-content active">
+                        <div id="bookings-list"></div>
+                    </div>
+
+                    <!-- Products Tab -->
+                    <div id="admin-tab-products" class="tab-content">
+                        <div class="tab-header">
+                            <h2>Servicios Disponibles</h2>
+                            <button class="btn btn-gradient" onclick="toggleAddProduct()">
+                                ➕ Agregar Servicio
+                            </button>
+                        </div>
+
+                        <div id="add-product-form" class="add-product-form" style="display: none;">
+                            <h3>Nuevo Servicio</h3>
+                            <form onsubmit="handleAddProduct(event)">
+                                <div class="form-row">
+                                    <input type="text" name="name" placeholder="Nombre del servicio *" required>
+                                    <input type="number" name="price" placeholder="Precio *" required>
+                                </div>
+                                <textarea name="description" placeholder="Descripción" rows="3"></textarea>
+                                <input type="url" name="image" placeholder="URL de imagen">
+                                <select name="category">
+                                    <option value="women">Mujer</option>
+                                    <option value="men">Hombre</option>
+                                </select>
+                                <div class="form-buttons">
+                                    <button type="submit" class="btn btn-success">✓ Guardar</button>
+                                    <button type="button" class="btn btn-secondary" onclick="toggleAddProduct()">✗ Cancelar</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="products-list" class="products-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <h3 class="footer-title">Kika Braids</h3>
+                    <p class="footer-text">Especialistas en peinados afro, trenzas y extensiones para mujeres y hombres.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-link">📷</a>
+                        <a href="#" class="social-link">📘</a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Contacto</h4>
+                    <div class="footer-info">
+                        <p>📞 +34 123 456 789</p>
+                        <p>📧 info@kikabraids.com</p>
+                        <p>📍 Calle Principal 123, Madrid</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="footer-heading">Horario</h4>
+                    <div class="footer-info">
+                        <p>Lunes - Viernes: 10:00 - 20:00</p>
+                        <p>Sábado: 10:00 - 18:00</p>
+                        <p>Domingo: Cerrado</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Kika Braids. Todos los derechos reservados.</p>
+                <a href="#" onclick="showPage('admin')" class="admin-link">Acceso Administrativo</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
