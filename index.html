@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/icon" href="img/logo.png">
     <title>Kika Braids - Peinados Afro y Trenzas</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -20,7 +21,8 @@
                 </a>
                 <nav class="nav-desktop">
                     <a href="#" onclick="showPage('home')" class="nav-link active">Inicio</a>
-                    <a href="#" onclick="showPage('services')" class="nav-link">Servicios</a>
+                    <a href="#" onclick="loadCategoryServices('women')" class="nav-link">👩 Mujeres</a>
+                    <a href="#" onclick="loadCategoryServices('men')" class="nav-link">👨 Hombres</a>
                     <a href="#" onclick="showPage('gallery')" class="nav-link">Galería</a>
                     <a href="#" onclick="showPage('booking')" class="nav-link">Reservar</a>
                 </nav>
@@ -30,7 +32,8 @@
             </div>
             <nav id="mobile-menu" class="nav-mobile">
                 <a href="#" onclick="showPage('home')" class="nav-link-mobile">Inicio</a>
-                <a href="#" onclick="showPage('services')" class="nav-link-mobile">Servicios</a>
+                <a href="#" onclick="loadCategoryServices('women')" class="nav-link-mobile">👩 Mujeres</a>
+                <a href="#" onclick="loadCategoryServices('men')" class="nav-link-mobile">👨 Hombres</a>
                 <a href="#" onclick="showPage('gallery')" class="nav-link-mobile">Galería</a>
                 <a href="#" onclick="showPage('booking')" class="nav-link-mobile">Reservar</a>
             </nav>
@@ -42,7 +45,7 @@
         <!-- Hero Section -->
         <section class="hero">
             <div class="hero-overlay"></div>
-            <img src="https://images.unsplash.com/photo-1709675154074-d33d811cd553?w=1200" alt="Kika Braids" class="hero-image">
+            <img src="img/logo.png" alt="Kika Braids" class="hero-image">
             <div class="hero-content">
                 <h1 class="hero-title">Kika Braids</h1>
                 <p class="hero-subtitle">Especialistas en Peinados Afro, Trenzas y Extensiones</p>
@@ -381,6 +384,78 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- Women Page -->
+    <div id="page-women" class="page">
+        <section class="page-header">
+            <div class="container">
+                <h1>👩 Servicios para Mujeres</h1>
+                <p>Peinados afro, trenzas y extensiones diseñadas para realzar tu belleza natural</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="services-grid" id="women-services-page"></div>
+            </div>
+        </section>
+
+        <section class="content-section alt">
+            <div class="container">
+                <div class="info-box">
+                    <h2>¿Por qué elegir nuestros servicios?</h2>
+                    <div class="info-content">
+                        <p>✨ <strong>Estilo Personalizado:</strong> Cada look se adapta a tu tipo de cabello y preferencias</p>
+                        <p>💎 <strong>Extensiones Premium:</strong> Utilizamos las mejores extensiones del mercado</p>
+                        <p>👱 <strong>Profesionales Expertas:</strong> Nuestro equipo tiene años de experiencia</p>
+                        <p>🕐 <strong>Duración:</strong> Nuestros trabajos duran 4-8 semanas con el cuidado adecuado</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container text-center">
+                <button class="btn btn-gradient" onclick="showPage('booking')">Reservar Cita</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Men Page -->
+    <div id="page-men" class="page">
+        <section class="page-header">
+            <div class="container">
+                <h1>👨 Servicios para Hombres</h1>
+                <p>Trenzas, gusanillos y tratamientos especializados con estilo masculino</p>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container">
+                <div class="services-grid" id="men-services-page"></div>
+            </div>
+        </section>
+
+        <section class="content-section alt">
+            <div class="container">
+                <div class="info-box">
+                    <h2>Servicios de Calidad para Hombres</h2>
+                    <div class="info-content">
+                        <p>✨ <strong>Diseños Modernos:</strong> Desde trenzas clásicas hasta gusanillos con estilo</p>
+                        <p>💪 <strong>Mantenimiento Fácil:</strong> Nuestros trabajos son prácticos y de bajo mantenimiento</p>
+                        <p>🎯 <strong>Profesionales Expertos:</strong> Especializados en cabello masculino afro</p>
+                        <p>🕐 <strong>Duración:</strong> Las trenzas duram 6-12 semanas según el cuidado</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="content-section">
+            <div class="container text-center">
+                <button class="btn btn-gradient" onclick="showPage('booking')">Reservar Cita</button>
+            </div>
+        </section>
     </div>
 
     <!-- Footer -->

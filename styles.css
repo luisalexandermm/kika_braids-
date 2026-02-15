@@ -248,6 +248,25 @@ body {
     width: 100%;
 }
 
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.btn-success:hover {
+    background: #059669;
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+}
+
+.btn-disabled,
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 /* Features */
 .features {
     padding: 4rem 0;
@@ -353,6 +372,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
 }
 
 .service-price {
@@ -897,6 +917,29 @@ body {
     border: 1px solid var(--gray-200);
     border-radius: 0.5rem;
     overflow: hidden;
+    padding: 1rem;
+    background: white;
+}
+
+.product-card h4 {
+    margin-bottom: 0.5rem;
+}
+
+.product-price {
+    color: var(--purple);
+    font-weight: 600;
+    margin: 0.5rem 0;
+}
+
+.product-category {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
 }
 
 .product-image {
