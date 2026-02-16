@@ -576,7 +576,8 @@
                 name: '',
                 email: '',
                 phone: '',
-                service_id: selectedService?.id || '',
+                category: '', // mujeres/hombres
+                service_id: '',
                 date: '',
                 time: '',
                 notes: '',
@@ -685,21 +686,14 @@
                                     </div>
 
                                     <div className="form-group">
-                                        <label>Servicio *</label>
-                                        <select name="service_id" required value={formData.service_id} onChange={handleChange}>
-                                            <option value="">Selecciona un servicio</option>
-                                            <optgroup label="Servicios para Mujeres">
-                                                {(services.women || []).map(s => (
-                                                    <option key={s.id} value={s.id}>{s.name} - ${s.price.toLocaleString('es-CO')}</option>
-                                                ))}
-                                            </optgroup>
-                                            <optgroup label="Servicios para Hombres">
-                                                {(services.men || []).map(s => (
-                                                    <option key={s.id} value={s.id}>{s.name} - ${s.price.toLocaleString('es-CO')}</option>
-                                                ))}
-                                            </optgroup>
+                                        <label>Categoría *</label>
+                                        <select name="category" required value={formData.category} onChange={handleChange}>
+                                            <option value="">servicio para </option>
+                                            <option value="women">Mujer</option>
+                                            <option value="men">Hombre</option>
                                         </select>
                                     </div>
+                                
                                     <div className="form-group">
                                         <label>Tipo de servicio *</label>
                                         <select name="hair_type" required value={formData.hair_type} onChange={handleChange}>
