@@ -636,20 +636,38 @@
                 let price = service.price;
                 if (formData.hair_type === 'kanekalon' && service.kanekalon) price = service.kanekalon;
                 if (formData.hair_type === 'natural' && service.natural) price = service.natural;
-                await onBookingSubmit({
-                    name: formData.name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    service_id: formData.service_id,
-                    service_name: service.name + ' (' + formData.hair_type + ')',
-                    price,
-                    date: formData.date,
-                    time: formData.time,
-                    notes: formData.notes
+                // Enviar reserva al backend
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: formData.name,
+                        email: formData.email,
+                        phone: formData.phone,
+                        service_id: formData.service_id,
+                        service_name: service.name + ' (' + formData.hair_type + ')',
+                        price,
+                        date: formData.date,
+                        time: formData.time,
+                        notes: formData.notes
+                    })
                 });
-                setFormData({ name: '', email: '', phone: '', service_id: '', date: '', time: '', notes: '', hair_type: '' });
-                setAvailabilityMessage('');
-                setAvailabilityError('');
+                const data = await response.json();
+                if (response.ok) {
+                    setAvailabilityMessage('¡Reserva enviada correctamente!');
+                    setAvailabilityError('');
+                    // Abrir WhatsApp automáticamente
+                    if (data.whatsappUrl) {
+                        window.open(data.whatsappUrl, '_blank');
+                    }
+                    setTimeout(() => {
+                        setFormData({ name: '', email: '', phone: '', category: '', service_id: '', date: '', time: '', notes: '', hair_type: '' });
+                        setAvailabilityMessage('');
+                        setAvailabilityError('');
+                    }, 2000);
+                } else {
+                    setAvailabilityError(data.error || 'Error al crear la reserva');
+                }
             };
 
             const allServices = [...(services.women || []), ...(services.men || [])];
