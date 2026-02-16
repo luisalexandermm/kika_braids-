@@ -35,6 +35,8 @@ function initializeDatabase() {
             description TEXT,
             image TEXT,
             category TEXT NOT NULL,
+            kanekalon INTEGER,
+            natural INTEGER,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )
     `);
@@ -77,23 +79,25 @@ function initializeDatabase() {
     db.all("SELECT name FROM services", (err, rows) => {
         const existingNames = rows ? rows.map(r => r.name) : [];
         const initialServices = [
-            { name: 'Box Braids', price: 80000, description: 'Trenzas africanas clásicas', image: '', category: 'women' },
-            { name: 'Twists', price: 70000, description: 'Twists para cabello natural', image: '', category: 'women' },
-            { name: 'Cornrows', price: 60000, description: 'Trenzas pegadas al cuero cabelludo', image: '', category: 'women' },
-            { name: 'Trenzas Hombre', price: 50000, description: 'Trenzas modernas para hombres', image: '', category: 'men' },
-            { name: 'Gusanillos', price: 45000, description: 'Gusanillos artísticos', image: '', category: 'men' },
-            { name: 'Cornrows Hombre', price: 40000, description: 'Cornrows para hombres', image: '', category: 'men' }
+            { name: 'Box Braids', price: 80000, description: 'Trenzas africanas clásicas', image: '', category: 'women', kanekalon: 90000, natural: 85000 },
+            { name: 'Twists', price: 70000, description: 'Twists para cabello natural', image: '', category: 'women', kanekalon: 80000, natural: 75000 },
+            { name: 'Cornrows', price: 60000, description: 'Trenzas pegadas al cuero cabelludo', image: '', category: 'women', kanekalon: 65000, natural: 60000 },
+            { name: 'Trenzas', price: 65000, description: 'Trenzas tradicionales y modernas', image: '', category: 'women', kanekalon: 70000, natural: 65000 },
+            { name: 'Definición de rizos', price: 55000, description: 'Definición profesional de rizos para cabello natural', image: '', category: 'women', kanekalon: 60000, natural: 55000 },
+            { name: 'Trenzas Hombre', price: 50000, description: 'Trenzas modernas para hombres', image: '', category: 'men', kanekalon: 55000, natural: 50000 },
+            { name: 'Gusanillos', price: 45000, description: 'Gusanillos artísticos', image: '', category: 'men', kanekalon: 50000, natural: 45000 },
+            { name: 'Cornrows Hombre', price: 40000, description: 'Cornrows para hombres', image: '', category: 'men', kanekalon: 45000, natural: 40000 }
         ];
         initialServices.forEach(service => {
             if (!existingNames.includes(service.name)) {
                 db.run(
-                    'INSERT INTO services (name, price, description, image, category) VALUES (?, ?, ?, ?, ?)',
-                    [service.name, service.price, service.description, service.image, service.category]
+                    'INSERT INTO services (name, price, description, image, category, kanekalon, natural) VALUES (?, ?, ?, ?, ?, ?, ?)',
+                    [service.name, service.price, service.description, service.image, service.category, service.kanekalon, service.natural]
                 );
             }
         });
         if (initialServices.length > 0) {
-            console.log('✅ Peinados por defecto insertados si faltaban');
+            console.log('✅ Peinados por defecto insertados al inventario si faltaban');
         }
     });
 

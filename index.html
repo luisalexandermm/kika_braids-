@@ -217,17 +217,6 @@
     <script type="text/babel">
         const HomePage = ({ services, onNavigate, onBook, testimonials, onTestimonialAdded }) => {
         // Peinados por defecto
-        const defaultWomenServices = [
-            { id: 'w1', name: 'Box Braids', description: 'Trenzas africanas clásicas', price: 80000, image: 'img/box_braids.jpg' },
-            { id: 'w2', name: 'Twists', description: 'Twists para cabello natural', price: 70000, image: 'img/twists.jpg' },
-            { id: 'w3', name: 'Cornrows', description: 'Trenzas pegadas al cuero cabelludo', price: 60000, image: 'img/cornrows.jpg' }
-        ];
-        const defaultMenServices = [
-            { id: 'm1', name: 'Trenzas Hombre', description: 'Trenzas modernas para hombres', price: 50000, image: 'img/trenzas_hombre.jpg' },
-            { id: 'm2', name: 'Gusanillos', description: 'Gusanillos artísticos', price: 45000, image: 'img/gusanillos.jpg' },
-            { id: 'm3', name: 'Cornrows Hombre', description: 'Cornrows para hombres', price: 40000, image: 'img/cornrows_hombre.jpg' }
-        ];
-
         const [showCommentForm, setShowCommentForm] = React.useState(false);
         const [commentForm, setCommentForm] = React.useState({
             name: '',
@@ -237,9 +226,22 @@
             service_name: ''
         });
 
-        // Si no hay servicios, usar los peinados por defecto
-        const womenServices = services.women && services.women.length > 0 ? services.women.slice(0, 3) : defaultWomenServices;
-        const menServices = services.men && services.men.length > 0 ? services.men.slice(0, 3) : defaultMenServices;
+        // Usar solo los servicios de la base de datos
+        const defaultWomenServices = [
+            { id: 'w1', name: 'Box Braids', description: 'Trenzas africanas clásicas', price: 80000, image: 'img/box_braids.jpg' },
+            { id: 'w2', name: 'Twists', description: 'Twists para cabello natural', price: 70000, image: 'img/twists.jpg' },
+            { id: 'w3', name: 'Cornrows', description: 'Trenzas pegadas al cuero cabelludo', price: 60000, image: 'img/cornrows.jpg' },
+            { id: 'w4', name: 'Trenzas', description: 'Trenzas tradicionales y modernas', price: 65000, image: '' },
+            { id: 'w5', name: 'Definición de rizos', description: 'Definición profesional de rizos para cabello natural', price: 55000, image: '' }
+        ];
+        const defaultMenServices = [
+            { id: 'm1', name: 'Trenzas Hombre', description: 'Trenzas modernas para hombres', price: 50000, image: 'img/trenzas_hombre.jpg' },
+            { id: 'm2', name: 'Gusanillos', description: 'Gusanillos artísticos', price: 45000, image: 'img/gusanillos.jpg' },
+            { id: 'm3', name: 'Cornrows Hombre', description: 'Cornrows para hombres', price: 40000, image: 'img/cornrows_hombre.jpg' }
+        ];
+
+        const womenServices = services.women && services.women.length > 0 ? services.women.slice(0, 3) : defaultWomenServices.slice(0, 3);
+        const menServices = services.men && services.men.length > 0 ? services.men.slice(0, 3) : defaultMenServices.slice(0, 3);
         const featuredServices = services.women && services.men && services.women.length > 1 && services.men.length > 0
             ? [services.women[0], services.men[0], services.women[1]].filter(Boolean)
             : [defaultWomenServices[0], defaultMenServices[0], defaultWomenServices[1]];
@@ -413,16 +415,7 @@
                                                    value={commentForm.email} onChange={handleCommentChange} />
                                         </div>
 
-                                        <div className="form-group">
-                                            <label>⭐ Calificación (1-5) *</label>
-                                            <select name="rating" required value={commentForm.rating} onChange={handleCommentChange}>
-                                                <option value="5">⭐⭐⭐⭐⭐ Excelente (5)</option>
-                                                <option value="4">⭐⭐⭐⭐ Muy Bueno (4)</option>
-                                                <option value="3">⭐⭐⭐ Bueno (3)</option>
-                                                <option value="2">⭐⭐ Aceptable (2)</option>
-                                                <option value="1">⭐ Necesita mejorar (1)</option>
-                                            </select>
-                                        </div>
+                                    
 
                                         <div className="form-group">
                                             <label>📋 Servicio (opcional)</label>
@@ -480,7 +473,14 @@
     <!-- Women Page Component -->
     <script type="text/babel">
         const WomenPage = ({ services, onBook }) => {
-            const womenServices = services.women || [];
+            const defaultWomenServices = [
+                { id: 'w1', name: 'Box Braids', description: 'Trenzas africanas clásicas', price: 80000, image: 'img/box_braids.jpg' },
+                { id: 'w2', name: 'Twists', description: 'Twists para cabello natural', price: 70000, image: 'img/twists.jpg' },
+                { id: 'w3', name: 'Cornrows', description: 'Trenzas pegadas al cuero cabelludo', price: 60000, image: 'img/cornrows.jpg' },
+                { id: 'w4', name: 'Trenzas', description: 'Trenzas tradicionales y modernas', price: 65000, image: '' },
+                { id: 'w5', name: 'Definición de rizos', description: 'Definición profesional de rizos para cabello natural', price: 55000, image: '' }
+            ];
+            const womenServices = services.women && services.women.length > 0 ? services.women : defaultWomenServices;
 
             return (
                 <div className="page active">
@@ -507,9 +507,7 @@
                                 <h2>¿Por qué elegir nuestros servicios?</h2>
                                 <div className="info-content">
                                     <p>✨ <strong>Estilo Personalizado:</strong> Cada look se adapta a tu tipo de cabello y preferencias</p>
-                                    <p>💎 <strong>Extensiones Premium:</strong> Utilizamos las mejores extensiones del mercado</p>
-                                    <p>👱 <strong>Profesionales Expertas:</strong> Nuestro equipo tiene años de experiencia</p>
-                                    <p>🕐 <strong>Duración:</strong> Nuestros trabajos duran 4-8 semanas con el cuidado adecuado</p>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -522,7 +520,12 @@
     <!-- Men Page Component -->
     <script type="text/babel">
         const MenPage = ({ services, onBook }) => {
-            const menServices = services.men || [];
+            const defaultMenServices = [
+                { id: 'm1', name: 'Trenzas Hombre', description: 'Trenzas modernas para hombres', price: 50000, image: 'img/trenzas_hombre.jpg' },
+                { id: 'm2', name: 'Gusanillos', description: 'Gusanillos artísticos', price: 45000, image: 'img/gusanillos.jpg' },
+                { id: 'm3', name: 'Cornrows Hombre', description: 'Cornrows para hombres', price: 40000, image: 'img/cornrows_hombre.jpg' }
+            ];
+            const menServices = services.men && services.men.length > 0 ? services.men : defaultMenServices;
 
             return (
                 <div className="page active">
