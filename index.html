@@ -618,12 +618,9 @@
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                if (!formData.service_id) {
-                    setAvailabilityError('Por favor selecciona un servicio');
-                    return;
-                }
-                if (!formData.hair_type) {
-                    setAvailabilityError('Por favor selecciona el tipo de servicio');
+                // Validar campos obligatorios
+                if (!formData.name || !formData.email || !formData.phone || !formData.service_id || !formData.hair_type || !formData.date || !formData.time) {
+                    setAvailabilityError('Completa todos los campos obligatorios antes de confirmar la reserva');
                     return;
                 }
                 const allServices = [...(services.women || []), ...(services.men || [])];
@@ -632,7 +629,6 @@
                     setAvailabilityError('Servicio no encontrado');
                     return;
                 }
-                // Precio según tipo de cabello
                 let price = service.price;
                 if (formData.hair_type === 'kanekalon' && service.kanekalon) price = service.kanekalon;
                 if (formData.hair_type === 'natural' && service.natural) price = service.natural;
@@ -656,15 +652,10 @@
                 if (response.ok) {
                     setAvailabilityMessage('¡Reserva enviada correctamente!');
                     setAvailabilityError('');
-                    // Abrir WhatsApp automáticamente
-                    if (data.whatsappUrl) {
-                        window.open(data.whatsappUrl, '_blank');
-                    }
                     setTimeout(() => {
                         setFormData({ name: '', email: '', phone: '', category: '', service_id: '', date: '', time: '', notes: '', hair_type: '' });
                         setAvailabilityMessage('');
                         setAvailabilityError('');
-                        // Redirigir a la página principal
                         if (typeof window !== 'undefined') {
                             window.location.hash = '#home';
                         }
@@ -772,7 +763,29 @@
                                                   value={formData.notes} onChange={handleChange}></textarea>
                                     </div>
 
-                                    <button type="submit" className="btn btn-gradient btn-full">Confirmar Reserva</button>
+                                    <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+                                        <button type="submit" className="btn btn-gradient btn-full">Confirmar Reserva</button>
+                                        <button type="button" className="btn btn-success btn-full" onClick={async () => {
+                                            // Validar campos
+                                            if (!formData.service_id || !formData.hair_type || !formData.name || !formData.phone || !formData.date || !formData.time) {
+                                                setAvailabilityError('Completa todos los campos obligatorios antes de enviar por WhatsApp');
+                                                return;
+                                            }
+                                            const allServices = [...(services.women || []), ...(services.men || [])];
+                                            const service = allServices.find(s => s.id == formData.service_id);
+                                            if (!service) {
+                                                setAvailabilityError('Servicio no encontrado');
+                                                return;
+                                            }
+                                            let price = service.price;
+                                            if (formData.hair_type === 'kanekalon' && service.kanekalon) price = service.kanekalon;
+                                            if (formData.hair_type === 'natural' && service.natural) price = service.natural;
+                                            const whatsappNumber = '3116620413';
+                                            const message = `Nueva reserva:\nNombre: ${formData.name}\nServicio: ${service.name} (${formData.hair_type})\nFecha: ${formData.date} a las ${formData.time}\nTeléfono: ${formData.phone}\nNotas: ${formData.notes || ''}`;
+                                            const whatsappUrl = `https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                                            window.open(whatsappUrl, '_blank');
+                                        }}>Enviar por WhatsApp</button>
+                                    </div>
                                 </form>
 
                                 <div className="info-box" style={{ marginTop: '2rem' }}>
