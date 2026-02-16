@@ -309,11 +309,20 @@ app.post('/api/bookings', (req, res) => {
                         res.status(500).json({ error: err.message });
                         return;
                     }
+                    // Enviar notificación por WhatsApp
+                    const whatsappNumber = '3116620413';
+                    const message = `Nueva reserva:\nNombre: ${name}\nServicio: ${service_name}\nFecha: ${date} a las ${time}\nTeléfono: ${phone}\nNotas: ${notes || ''}`;
+                    // Enviar usando WhatsApp Web (solo abre enlace, requiere WhatsApp en el dispositivo)
+                    // Puedes integrar Twilio o una API real si lo deseas
+                    const whatsappUrl = `https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                    // Solo para propósitos de backend, no abre el navegador, pero puedes registrar el enlace
+                    console.log('Reserva enviada a WhatsApp:', whatsappUrl);
                     res.json({ 
                         id: this.lastID, 
                         name, email, phone, service_id, service_name, price, date, time, notes,
                         status: 'pending',
-                        created_at: new Date().toISOString()
+                        created_at: new Date().toISOString(),
+                        whatsappUrl
                     });
                 }
             );
