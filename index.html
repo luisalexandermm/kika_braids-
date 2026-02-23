@@ -21,7 +21,7 @@
 
     <!-- API Service -->
     <script type="text/babel">
-        const API_BASE = 'http://localhost:5000/api';
+        const API_BASE = 'https://kika-braids.onrender.com/api';
 
         const api = {
             // Servicios
@@ -228,9 +228,9 @@
 
         // Usar solo los servicios de la base de datos
         const defaultWomenServices = [
-            { id: 'w1', name: 'Box Braids', description: 'Trenzas africanas clásicas', price: 80000, image: 'img/box_braids.jpg' },
-            { id: 'w2', name: 'Twists', description: 'Twists para cabello natural', price: 70000, image: 'img/twists.jpg' },
-            { id: 'w3', name: 'Cornrows', description: 'Trenzas pegadas al cuero cabelludo', price: 60000, image: 'img/cornrows.jpg' },
+            { id: 'w1', name: 'Box Braids', description: 'Trenzas africanas clásicas', price: 50000, image: 'img/box_braids.jpg' },
+            { id: 'w2', name: 'Twists', description: 'Twists para cabello natural', price: 30000, image: 'img/twists.jpg' },
+            { id: 'w3', name: 'Cornrows', description: 'Trenzas pegadas al cuero cabelludo', price: 40000, image: 'img/cornrows.jpg' },
             { id: 'w4', name: 'Trenzas', description: 'Trenzas tradicionales y modernas', price: 65000, image: '' },
             { id: 'w5', name: 'Definición de rizos', description: 'Definición profesional de rizos para cabello natural', price: 55000, image: '' }
         ];
@@ -250,7 +250,6 @@
             const { name, value } = e.target;
             setCommentForm(prev => ({ ...prev, [name]: name === 'rating' ? parseInt(value) : value }));
         };
-
         const handleCommentSubmit = async (e) => {
             e.preventDefault();
             try {
@@ -959,36 +958,44 @@
                                         {bookings.length === 0 ? (
                                             <p style={{ textAlign: 'center', color: '#999', padding: '2rem' }}>No hay reservas aún</p>
                                         ) : (
-                                            bookings.map(booking => (
-                                                <div key={booking.id} style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1rem' }}>
-                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                                        <div>
-                                                            <h3 style={{ margin: 0, fontSize: '1.125rem' }}>{booking.name}</h3>
-                                                            <p style={{ margin: '0.25rem 0', color: '#666', fontSize: '0.875rem' }}>{booking.service_name}</p>
+                                            bookings.map(booking => {
+                                                const whatsappNumber = '3116620413';
+                                                const message = `Nueva reserva:\nNombre: ${booking.name}\nServicio: ${booking.service_name}\nFecha: ${booking.date} a las ${booking.time}\nTeléfono: ${booking.phone}\nNotas: ${booking.notes || ''}`;
+                                                const whatsappUrl = `https://wa.me/57${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                                                return (
+                                                    <div key={booking.id} style={{ border: '1px solid #e5e7eb', borderRadius: '0.5rem', padding: '1.5rem', marginBottom: '1rem' }}>
+                                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                                            <div>
+                                                                <h3 style={{ margin: 0, fontSize: '1.125rem' }}>{booking.name}</h3>
+                                                                <p style={{ margin: '0.25rem 0', color: '#666', fontSize: '0.875rem' }}>{booking.service_name}</p>
+                                                            </div>
+                                                            <span style={{ background: booking.status === 'pending' ? '#fef3c7' : '#d1fae5', color: booking.status === 'pending' ? '#92400e' : '#065f46', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: '600' }}>
+                                                                {booking.status === 'pending' ? 'Pendiente' : 'Completada'}
+                                                            </span>
                                                         </div>
-                                                        <span style={{ background: booking.status === 'pending' ? '#fef3c7' : '#d1fae5', color: booking.status === 'pending' ? '#92400e' : '#065f46', padding: '0.25rem 0.75rem', borderRadius: '9999px', fontSize: '0.875rem', fontWeight: '600' }}>
-                                                            {booking.status === 'pending' ? 'Pendiente' : 'Completada'}
-                                                        </span>
+                                                        <div style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
+                                                            <p><strong>📧 Email:</strong> {booking.email}</p>
+                                                            <p><strong>📞 Teléfono:</strong> {booking.phone}</p>
+                                                            <p><strong>💰 Precio:</strong> ${booking.price?.toLocaleString('es-CO')}</p>
+                                                            <p><strong>📅 Fecha:</strong> {booking.date} a las {booking.time}</p>
+                                                        </div>
+                                                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                                            <button className="btn btn-small" 
+                                                                    onClick={() => onCompleteBooking(booking.id)}
+                                                                    disabled={booking.status === 'completed'}>
+                                                                ✓ Completar
+                                                            </button>
+                                                            <button className="btn btn-small btn-danger" 
+                                                                    onClick={() => onDeleteBooking(booking.id)}>
+                                                                🗑️ Eliminar
+                                                            </button>
+                                                            <a className="btn btn-small btn-success" href={whatsappUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                                                                📲 Enviar a WhatsApp
+                                                            </a>
+                                                        </div>
                                                     </div>
-                                                    <div style={{ fontSize: '0.875rem', marginBottom: '1rem' }}>
-                                                        <p><strong>📧 Email:</strong> {booking.email}</p>
-                                                        <p><strong>📞 Teléfono:</strong> {booking.phone}</p>
-                                                        <p><strong>💰 Precio:</strong> ${booking.price?.toLocaleString('es-CO')}</p>
-                                                        <p><strong>📅 Fecha:</strong> {booking.date} a las {booking.time}</p>
-                                                    </div>
-                                                    <div style={{ display: 'flex', gap: '0.5rem' }}>
-                                                        <button className="btn btn-small" 
-                                                                onClick={() => onCompleteBooking(booking.id)}
-                                                                disabled={booking.status === 'completed'}>
-                                                            ✓ Completar
-                                                        </button>
-                                                        <button className="btn btn-small btn-danger" 
-                                                                onClick={() => onDeleteBooking(booking.id)}>
-                                                            🗑️ Eliminar
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            ))
+                                                );
+                                            })
                                         )}
                                     </div>
                                 )}
