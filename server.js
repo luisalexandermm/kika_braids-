@@ -83,7 +83,7 @@ function initializeDatabase() {
             { name: 'Twists', price: 50000, description: 'Twists para cabello natural', image: '', category: 'women', kanekalon: 50000, natural: 45000 },
             { name: 'Cornrows', price: 60000, description: 'Trenzas pegadas al cuero cabelludo', image: '', category: 'women', kanekalon: 65000, natural: 60000 },
             { name: 'Trenzas', price: 65000, description: 'Trenzas tradicionales y modernas', image: '', category: 'women', kanekalon: 50000, natural: 40000 },
-            { name: 'Definición de rizos', price: 55000, description: 'Definición profesional de rizos para cabello natural', image: '', category: 'women', kanekalon: 60000, natural: 55000 },
+            { name: 'Definición de rizos', price: 55000, description: 'Definición profesional de rizos para cabello natural', image: '', category: 'women',},
             { name: 'Trenzas Hombre', price: 50000, description: 'Trenzas modernas para hombres', image: '', category: 'men', kanekalon: 55000, natural: 50000 },
             { name: 'Gusanillos', price: 45000, description: 'Gusanillos artísticos', image: '', category: 'men', kanekalon: 50000, natural: 45000 },
             { name: 'Cornrows Hombre', price: 40000, description: 'Cornrows para hombres', image: '', category: 'men', kanekalon: 45000, natural: 40000 }
